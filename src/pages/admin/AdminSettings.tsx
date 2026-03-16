@@ -148,20 +148,23 @@ const AdminSettings = () => {
             <div className="bg-card rounded-xl border border-border shadow-luxury p-6 space-y-4">
               <h3 className="font-display font-semibold">Stripe Payment Settings</h3>
               <p className="text-sm text-muted-foreground">
-                Connect Stripe to accept payments. Requires Lovable Cloud backend for secure key storage.
+                Use demo test values for now. Later you can replace them with your real Stripe keys from the admin panel and connect secure backend checkout.
               </p>
+              <div className="rounded-lg border border-border bg-secondary/50 p-4 text-sm text-muted-foreground">
+                Demo mode only: these fields are visual placeholders and are not saved to any live payment provider yet.
+              </div>
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Publishable Key</label>
-                  <Input placeholder="pk_test_..." />
+                  <Input defaultValue="pk_test_demo_placeholder" placeholder="pk_test_..." />
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Secret Key</label>
-                  <Input type="password" placeholder="sk_test_..." />
+                  <Input type="password" defaultValue="sk_test_demo_placeholder" placeholder="sk_test_..." />
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Webhook Secret</label>
-                  <Input type="password" placeholder="whsec_..." />
+                  <Input type="password" defaultValue="whsec_demo_placeholder" placeholder="whsec_..." />
                 </div>
               </div>
               <Button variant="gold" onClick={() => handleSave('Payment')}>Save Payment Settings</Button>

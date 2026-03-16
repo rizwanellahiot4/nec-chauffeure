@@ -97,7 +97,7 @@ const BookingSummary = () => {
       </Button>
 
       <p className="text-xs text-center text-muted-foreground">
-        Stripe payment integration required for production. This is a demo flow.
+        Demo checkout is enabled for testing right now. You can connect your real Stripe setup later from the admin panel.
       </p>
     </div>
   );

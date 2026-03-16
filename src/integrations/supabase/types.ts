@@ -14,16 +14,293 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          booking_reference: string
+          child_seat: boolean
+          created_at: string
+          created_by: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          dropoff_address: string
+          dropoff_lat: number
+          dropoff_lng: number
+          id: string
+          luggage: number
+          notes: string
+          passengers: number
+          payment_status: string
+          pickup_address: string
+          pickup_at: string
+          pickup_lat: number
+          pickup_lng: number
+          route_distance_km: number
+          route_duration_minutes: number
+          route_geometry: Json
+          service_type: string
+          status: string
+          stripe_checkout_session_id: string | null
+          stripe_payment_intent_id: string | null
+          total_price: number
+          updated_at: string
+          vehicle_id: string | null
+          vehicle_name_snapshot: string
+        }
+        Insert: {
+          booking_reference?: string
+          child_seat?: boolean
+          created_at?: string
+          created_by?: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          dropoff_address: string
+          dropoff_lat: number
+          dropoff_lng: number
+          id?: string
+          luggage: number
+          notes?: string
+          passengers: number
+          payment_status?: string
+          pickup_address: string
+          pickup_at: string
+          pickup_lat: number
+          pickup_lng: number
+          route_distance_km: number
+          route_duration_minutes: number
+          route_geometry?: Json
+          service_type: string
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          total_price: number
+          updated_at?: string
+          vehicle_id?: string | null
+          vehicle_name_snapshot: string
+        }
+        Update: {
+          booking_reference?: string
+          child_seat?: boolean
+          created_at?: string
+          created_by?: string | null
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          dropoff_address?: string
+          dropoff_lat?: number
+          dropoff_lng?: number
+          id?: string
+          luggage?: number
+          notes?: string
+          passengers?: number
+          payment_status?: string
+          pickup_address?: string
+          pickup_at?: string
+          pickup_lat?: number
+          pickup_lng?: number
+          route_distance_km?: number
+          route_duration_minutes?: number
+          route_geometry?: Json
+          service_type?: string
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          total_price?: number
+          updated_at?: string
+          vehicle_id?: string | null
+          vehicle_name_snapshot?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_settings: {
+        Row: {
+          business_address: string
+          business_email: string
+          business_logo_url: string | null
+          business_name: string
+          business_phone: string
+          created_at: string
+          footer_copyright_text: string
+          id: string
+          primary_brand_color: string
+          secondary_brand_color: string
+          updated_at: string
+        }
+        Insert: {
+          business_address: string
+          business_email: string
+          business_logo_url?: string | null
+          business_name: string
+          business_phone: string
+          created_at?: string
+          footer_copyright_text: string
+          id?: string
+          primary_brand_color: string
+          secondary_brand_color: string
+          updated_at?: string
+        }
+        Update: {
+          business_address?: string
+          business_email?: string
+          business_logo_url?: string | null
+          business_name?: string
+          business_phone?: string
+          created_at?: string
+          footer_copyright_text?: string
+          id?: string
+          primary_brand_color?: string
+          secondary_brand_color?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      map_settings: {
+        Row: {
+          center_lat: number
+          center_lng: number
+          country_code: string
+          created_at: string
+          id: string
+          updated_at: string
+          zoom: number
+        }
+        Insert: {
+          center_lat?: number
+          center_lng?: number
+          country_code?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          zoom?: number
+        }
+        Update: {
+          center_lat?: number
+          center_lng?: number
+          country_code?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          zoom?: number
+        }
+        Relationships: []
+      }
+      pricing_settings: {
+        Row: {
+          airport_surcharge: number
+          base_fare: number
+          child_seat_price: number
+          created_at: string
+          hourly_rate: number
+          id: string
+          price_per_km: number
+          updated_at: string
+        }
+        Insert: {
+          airport_surcharge?: number
+          base_fare?: number
+          child_seat_price?: number
+          created_at?: string
+          hourly_rate?: number
+          id?: string
+          price_per_km?: number
+          updated_at?: string
+        }
+        Update: {
+          airport_surcharge?: number
+          base_fare?: number
+          child_seat_price?: number
+          created_at?: string
+          hourly_rate?: number
+          id?: string
+          price_per_km?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vehicles: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          image: string
+          is_active: boolean
+          luggage: number
+          name: string
+          passengers: number
+          price_multiplier: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          image: string
+          is_active?: boolean
+          luggage: number
+          name: string
+          passengers: number
+          price_multiplier?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          image?: string
+          is_active?: boolean
+          luggage?: number
+          name?: string
+          passengers?: number
+          price_multiplier?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +427,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+    },
   },
 } as const

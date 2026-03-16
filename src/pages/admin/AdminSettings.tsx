@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ const AdminSettings = () => {
   const { data: livePricing } = usePricingSettings();
   const { data: liveMap } = useMapSettings();
 
-  const [brand, setBrand] = useState<BrandSettings>(liveBrand ?? {
+  const [brand, setBrand] = useState<BrandSettings>({
     businessName: 'EliteDrive',
     businessEmail: 'info@elitedrive.com',
     businessPhone: '+1 (234) 567-890',
@@ -25,7 +25,7 @@ const AdminSettings = () => {
     footerText: '© 2026 EliteDrive. All rights reserved.',
   });
 
-  const [pricing, setPricing] = useState<PricingConfig>(livePricing ?? {
+  const [pricing, setPricing] = useState<PricingConfig>({
     baseFare: 15,
     pricePerKm: 2.5,
     hourlyRate: 65,
@@ -41,19 +41,24 @@ const AdminSettings = () => {
     boosterSeatPrice: 10,
   });
 
-  const [mapSettings, setMapSettings] = useState<MapSettings>(liveMap ?? {
+  const [mapSettings, setMapSettings] = useState<MapSettings>({
     centerLat: 40.7128,
     centerLng: -74.006,
     zoom: 12,
     countryCode: 'us',
   });
 
-  const syncBrand = liveBrand && liveBrand.businessName !== brand.businessName ? liveBrand : null;
-  const syncPricing = livePricing && livePricing.baseFare !== pricing.baseFare ? livePricing : null;
-  const syncMap = liveMap && liveMap.zoom !== mapSettings.zoom ? liveMap : null;
-  if (syncBrand) setBrand(syncBrand);
-  if (syncPricing) setPricing(syncPricing);
-  if (syncMap) setMapSettings(syncMap);
+  useEffect(() => {
+    if (liveBrand) setBrand(liveBrand);
+  }, [liveBrand]);
+
+  useEffect(() => {
+    if (livePricing) setPricing(livePricing);
+  }, [livePricing]);
+
+  useEffect(() => {
+    if (liveMap) setMapSettings(liveMap);
+  }, [liveMap]);
 
   const handleSaveBrand = async () => {
     const { error } = await supabase.from('brand_settings').update({

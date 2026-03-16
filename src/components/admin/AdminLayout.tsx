@@ -1,7 +1,8 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
-import { LayoutDashboard, CalendarDays, Car, Settings, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Car, Settings, LogOut, Menu } from 'lucide-react';
 import { useState } from 'react';
+import { useBrandSettings } from '@/hooks/use-live-data';
 
 const navItems = [
   { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
@@ -12,12 +13,13 @@ const navItems = [
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const { logout } = useAdminAuth();
+  const { data: brand } = useBrandSettings();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/admin/login');
   };
 
@@ -29,14 +31,14 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
             <Car className="h-4 w-4 text-accent-foreground" />
           </div>
           <span className="font-display text-lg font-bold text-sidebar-foreground">
-            Elite<span className="text-sidebar-primary">Drive</span>
+            {brand?.businessName ?? 'EliteDrive'}
           </span>
         </Link>
         <p className="text-xs text-sidebar-foreground/50 mt-1">Admin Dashboard</p>
       </div>
 
       <nav className="flex-1 p-3 space-y-1">
-        {navItems.map(item => {
+        {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <Link
@@ -70,12 +72,10 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="min-h-screen flex bg-background">
-      {/* Desktop sidebar */}
       <aside className="hidden lg:flex w-64 flex-col bg-sidebar border-r border-sidebar-border flex-shrink-0">
         <SidebarContent />
       </aside>
 
-      {/* Mobile sidebar overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-foreground/50" onClick={() => setMobileOpen(false)} />
@@ -85,19 +85,16 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
       )}
 
-      {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-14 border-b border-border bg-card flex items-center px-4 gap-3 flex-shrink-0">
           <button onClick={() => setMobileOpen(true)} className="lg:hidden p-1.5 rounded-md hover:bg-secondary">
             <Menu className="h-5 w-5" />
           </button>
           <h2 className="font-display font-semibold text-sm">
-            {navItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
+            {navItems.find((i) => i.path === location.pathname)?.label || 'Dashboard'}
           </h2>
         </header>
-        <main className="flex-1 p-4 sm:p-6 overflow-auto">
-          {children}
-        </main>
+        <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
       </div>
     </div>
   );

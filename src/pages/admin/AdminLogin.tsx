@@ -5,42 +5,45 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Car, Mail, Lock, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useBrandSettings } from '@/hooks/use-live-data';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const { login } = useAdminAuth();
+  const { data: brand } = useBrandSettings();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     if (!email.trim() || !password.trim()) {
       setError('Please fill in all fields');
       return;
     }
-    const success = login(email, password);
+
+    setSubmitting(true);
+    const success = await login(email, password);
+    setSubmitting(false);
+
     if (success) {
       navigate('/admin');
     } else {
-      setError('Invalid credentials');
+      setError('Admin access is required for this account');
     }
   };
 
   return (
     <div className="min-h-screen hero-gradient flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="h-14 w-14 rounded-xl gold-gradient flex items-center justify-center mx-auto mb-4">
             <Car className="h-7 w-7 text-accent-foreground" />
           </div>
-          <h1 className="font-display text-2xl font-bold text-primary-foreground">Admin Panel</h1>
-          <p className="text-primary-foreground/60 text-sm mt-1">Sign in to manage EliteDrive</p>
+          <h1 className="font-display text-2xl font-bold text-primary-foreground">{brand?.businessName ?? 'EliteDrive'} Admin</h1>
+          <p className="text-primary-foreground/60 text-sm mt-1">Sign in with an admin account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-card rounded-xl shadow-luxury-lg border border-border p-6 space-y-4">
@@ -55,13 +58,7 @@ const AdminLogin = () => {
             <label className="text-sm font-medium mb-1.5 block">Email</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@elitedrive.com"
-                className="pl-10 h-11"
-              />
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@example.com" className="pl-10 h-11" />
             </div>
           </div>
 
@@ -69,18 +66,12 @@ const AdminLogin = () => {
             <label className="text-sm font-medium mb-1.5 block">Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="pl-10 h-11"
-              />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pl-10 h-11" />
             </div>
           </div>
 
-          <Button variant="gold" size="lg" type="submit" className="w-full">
-            Sign In
+          <Button variant="gold" size="lg" type="submit" className="w-full" disabled={submitting}>
+            {submitting ? 'Signing In...' : 'Sign In'}
           </Button>
         </form>
       </motion.div>

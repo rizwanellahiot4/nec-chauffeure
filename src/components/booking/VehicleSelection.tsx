@@ -1,5 +1,5 @@
 import { useBooking } from '@/contexts/BookingContext';
-import { defaultVehicles } from '@/data/vehicles';
+import { useVehicles, usePricingSettings } from '@/hooks/use-live-data';
 import { Button } from '@/components/ui/button';
 import { Users, Briefcase, ArrowLeft, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -7,16 +7,12 @@ import { Vehicle } from '@/types/booking';
 
 const VehicleSelection = () => {
   const { routeInfo, formData, selectedVehicle, setSelectedVehicle, calculatePrice, setTotalPrice, setStep } = useBooking();
+  const { data: vehicles = [] } = useVehicles();
+  const { data: pricing } = usePricingSettings();
 
   const handleSelect = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
-    if (routeInfo) {
-      setTotalPrice(calculatePrice(vehicle, routeInfo, formData));
-    }
-  };
-
-  const handleContinue = () => {
-    if (selectedVehicle) setStep(3);
+    if (routeInfo) setTotalPrice(calculatePrice(vehicle, routeInfo, formData));
   };
 
   return (
@@ -31,32 +27,19 @@ const VehicleSelection = () => {
 
       {routeInfo && (
         <div className="flex items-center gap-4 bg-secondary rounded-lg p-3 text-sm">
-          <span className="font-medium">{routeInfo.distance.toFixed(1)} km</span>
+          <span className="font-medium">{routeInfo.distance.toFixed(1)} {pricing?.distanceUnit ?? 'km'}</span>
           <span className="text-muted-foreground">•</span>
           <span className="font-medium">~{Math.round(routeInfo.duration)} min</span>
         </div>
       )}
 
       <div className="grid gap-4">
-        {defaultVehicles.map((vehicle, i) => {
+        {vehicles.map((vehicle, i) => {
           const price = routeInfo ? calculatePrice(vehicle, routeInfo, formData) : 0;
           const isSelected = selectedVehicle?.id === vehicle.id;
           return (
-            <motion.div
-              key={vehicle.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className={`relative bg-card rounded-lg border-2 p-4 cursor-pointer transition-all ${
-                isSelected ? 'border-accent shadow-gold-glow' : 'border-border hover:border-accent/50'
-              }`}
-              onClick={() => handleSelect(vehicle)}
-            >
-              {isSelected && (
-                <div className="absolute top-3 right-3 h-6 w-6 rounded-full gold-gradient flex items-center justify-center">
-                  <Check className="h-3.5 w-3.5 text-accent-foreground" />
-                </div>
-              )}
+            <motion.div key={vehicle.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className={`relative bg-card rounded-lg border-2 p-4 cursor-pointer transition-all ${isSelected ? 'border-accent shadow-gold-glow' : 'border-border hover:border-accent/50'}`} onClick={() => handleSelect(vehicle)}>
+              {isSelected && <div className="absolute top-3 right-3 h-6 w-6 rounded-full gold-gradient flex items-center justify-center"><Check className="h-3.5 w-3.5 text-accent-foreground" /></div>}
               <div className="flex items-center gap-4">
                 <div className="w-28 h-20 flex-shrink-0 rounded-md bg-secondary flex items-center justify-center overflow-hidden">
                   <img src={vehicle.image} alt={vehicle.name} className="w-full h-full object-contain p-1" />
@@ -78,7 +61,7 @@ const VehicleSelection = () => {
         })}
       </div>
 
-      <Button variant="gold" size="lg" className="w-full" disabled={!selectedVehicle} onClick={handleContinue}>
+      <Button variant="gold" size="lg" className="w-full" disabled={!selectedVehicle} onClick={() => selectedVehicle && setStep(3)}>
         Continue to Details
       </Button>
     </div>

@@ -8,6 +8,19 @@ export interface Vehicle {
   description: string;
 }
 
+export type ServiceType =
+  | 'chauffeur-hourly'
+  | 'from-airport'
+  | 'to-airport'
+  | 'private-tour'
+  | 'one-way-transfer';
+
+export type ChildSeatType =
+  | 'none'
+  | 'rear-facing-seat'
+  | 'forward-facing-seat'
+  | 'booster-seat';
+
 export interface BookingFormData {
   pickupAddress: string;
   dropoffAddress: string;
@@ -20,7 +33,9 @@ export interface BookingFormData {
   passengers: number;
   luggage: number;
   childSeat: boolean;
-  serviceType: 'one-way' | 'hourly' | 'airport';
+  childSeatType: ChildSeatType;
+  serviceType: ServiceType;
+  durationHours: number;
   notes: string;
 }
 
@@ -38,6 +53,7 @@ export interface CustomerDetails {
 
 export interface Booking {
   id: string;
+  dbId?: string;
   customer: CustomerDetails;
   formData: BookingFormData;
   vehicle: Vehicle;
@@ -54,6 +70,14 @@ export interface PricingConfig {
   hourlyRate: number;
   airportSurcharge: number;
   childSeatPrice: number;
+  distanceUnit?: 'km' | 'mi';
+  fromAirportSurcharge?: number;
+  toAirportSurcharge?: number;
+  privateTourBaseFare?: number;
+  hourlyChauffeurBaseFare?: number;
+  rearFacingSeatPrice?: number;
+  forwardFacingSeatPrice?: number;
+  boosterSeatPrice?: number;
 }
 
 export interface BrandSettings {
@@ -64,6 +88,7 @@ export interface BrandSettings {
   primaryColor: string;
   secondaryColor: string;
   footerText: string;
+  businessLogoUrl?: string | null;
 }
 
 export interface MapSettings {

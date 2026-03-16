@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           booking_reference: string
           child_seat: boolean
+          child_seat_type: string
           created_at: string
           created_by: string | null
           customer_email: string
@@ -26,6 +27,7 @@ export type Database = {
           dropoff_address: string
           dropoff_lat: number
           dropoff_lng: number
+          duration_hours: number
           id: string
           luggage: number
           notes: string
@@ -50,6 +52,7 @@ export type Database = {
         Insert: {
           booking_reference?: string
           child_seat?: boolean
+          child_seat_type?: string
           created_at?: string
           created_by?: string | null
           customer_email: string
@@ -58,6 +61,7 @@ export type Database = {
           dropoff_address: string
           dropoff_lat: number
           dropoff_lng: number
+          duration_hours?: number
           id?: string
           luggage: number
           notes?: string
@@ -82,6 +86,7 @@ export type Database = {
         Update: {
           booking_reference?: string
           child_seat?: boolean
+          child_seat_type?: string
           created_at?: string
           created_by?: string | null
           customer_email?: string
@@ -90,6 +95,7 @@ export type Database = {
           dropoff_address?: string
           dropoff_lat?: number
           dropoff_lng?: number
+          duration_hours?: number
           id?: string
           luggage?: number
           notes?: string
@@ -197,31 +203,58 @@ export type Database = {
         Row: {
           airport_surcharge: number
           base_fare: number
+          booster_seat_price: number
           child_seat_price: number
           created_at: string
+          distance_unit: string
+          forward_facing_seat_price: number
+          from_airport_surcharge: number
+          hourly_chauffeur_base_fare: number
+          hourly_distance_unit: string
           hourly_rate: number
           id: string
           price_per_km: number
+          private_tour_base_fare: number
+          rear_facing_seat_price: number
+          to_airport_surcharge: number
           updated_at: string
         }
         Insert: {
           airport_surcharge?: number
           base_fare?: number
+          booster_seat_price?: number
           child_seat_price?: number
           created_at?: string
+          distance_unit?: string
+          forward_facing_seat_price?: number
+          from_airport_surcharge?: number
+          hourly_chauffeur_base_fare?: number
+          hourly_distance_unit?: string
           hourly_rate?: number
           id?: string
           price_per_km?: number
+          private_tour_base_fare?: number
+          rear_facing_seat_price?: number
+          to_airport_surcharge?: number
           updated_at?: string
         }
         Update: {
           airport_surcharge?: number
           base_fare?: number
+          booster_seat_price?: number
           child_seat_price?: number
           created_at?: string
+          distance_unit?: string
+          forward_facing_seat_price?: number
+          from_airport_surcharge?: number
+          hourly_chauffeur_base_fare?: number
+          hourly_distance_unit?: string
           hourly_rate?: number
           id?: string
           price_per_km?: number
+          private_tour_base_fare?: number
+          rear_facing_seat_price?: number
+          to_airport_surcharge?: number
           updated_at?: string
         }
         Relationships: []

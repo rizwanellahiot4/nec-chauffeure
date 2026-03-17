@@ -199,6 +199,39 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_settings: {
+        Row: {
+          checkout_cancel_path: string
+          checkout_success_path: string
+          created_at: string
+          id: string
+          mode: string
+          publishable_key: string | null
+          updated_at: string
+          webhook_endpoint_path: string
+        }
+        Insert: {
+          checkout_cancel_path?: string
+          checkout_success_path?: string
+          created_at?: string
+          id?: string
+          mode?: string
+          publishable_key?: string | null
+          updated_at?: string
+          webhook_endpoint_path?: string
+        }
+        Update: {
+          checkout_cancel_path?: string
+          checkout_success_path?: string
+          created_at?: string
+          id?: string
+          mode?: string
+          publishable_key?: string | null
+          updated_at?: string
+          webhook_endpoint_path?: string
+        }
+        Relationships: []
+      }
       pricing_settings: {
         Row: {
           airport_surcharge: number

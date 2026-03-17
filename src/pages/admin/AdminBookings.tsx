@@ -3,7 +3,7 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Search, Calendar, Eye } from 'lucide-react';
+import { Search, Calendar, Eye, MapPin, User, CreditCard, DollarSign, Car } from 'lucide-react';
 import type { Booking } from '@/types/booking';
 import { useAdminBookings } from '@/hooks/use-live-data';
 import { formatServiceType } from '@/lib/booking-options';

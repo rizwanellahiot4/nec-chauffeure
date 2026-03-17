@@ -37,6 +37,7 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   useEffect(() => {
     let mounted = true;
+    let initialCheckDone = false;
 
     const finish = (isAdmin: boolean) => {
       if (!mounted) return;
@@ -62,18 +63,30 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }
     };
 
+    // Restore session first, THEN subscribe to changes
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        initialCheckDone = true;
+        return syncSession(data.session);
+      })
+      .catch(() => {
+        initialCheckDone = true;
+        finish(false);
+      });
+
     const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      // Skip the initial SIGNED_IN event that duplicates getSession
+      if (!initialCheckDone) return;
       void syncSession(nextSession);
     });
 
-    void supabase.auth
-      .getSession()
-      .then(({ data }) => syncSession(data.session))
-      .catch(() => finish(false));
-
+    // Generous timeout for slow networks on hard refresh
     const timeoutId = window.setTimeout(() => {
-      finish(false);
-    }, 2500);
+      if (!initialCheckDone) {
+        finish(false);
+      }
+    }, 8000);
 
     return () => {
       mounted = false;

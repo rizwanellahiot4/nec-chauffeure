@@ -1,7 +1,8 @@
 import { useBooking } from '@/contexts/BookingContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, MapPin, Calendar, Clock, Users, Briefcase, Car, CreditCard } from 'lucide-react';
-import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { ArrowLeft, MapPin, Calendar, Clock, Users, Briefcase, Car, CreditCard, LockKeyhole } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { formatChildSeatType, formatServiceType } from '@/lib/booking-options';
@@ -14,10 +15,18 @@ const BookingSummary = () => {
   const { formData, selectedVehicle, customerDetails, routeInfo, totalPrice, setStep } = useBooking();
   const { data: pricing } = usePricingSettings();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [cardName, setCardName] = useState('');
+  const [cardNumber, setCardNumber] = useState('4242 4242 4242 4242');
+  const [expiry, setExpiry] = useState('12/34');
+  const [cvc, setCvc] = useState('123');
   const navigate = useNavigate();
 
+  const canPay = useMemo(() => {
+    return cardName.trim().length > 2 && cardNumber.replace(/\s/g, '').length >= 16 && expiry.trim().length >= 4 && cvc.trim().length >= 3;
+  }, [cardName, cardNumber, expiry, cvc]);
+
   const handlePayment = async () => {
-    if (!selectedVehicle || !routeInfo) return;
+    if (!selectedVehicle || !routeInfo || !canPay) return;
     setIsProcessing(true);
 
     const bookingReference = createBookingReference();
@@ -51,8 +60,8 @@ const BookingSummary = () => {
         total_price: totalPrice,
         notes: formData.notes,
         created_by: auth.user?.id ?? null,
-        status: 'pending',
-        payment_status: 'pending',
+        status: 'confirmed',
+        payment_status: 'paid',
       });
 
     setIsProcessing(false);
@@ -62,7 +71,7 @@ const BookingSummary = () => {
       return;
     }
 
-    navigate(`/booking/confirmation?id=${bookingReference}&status=pending`);
+    navigate(`/booking/confirmation?id=${bookingReference}&status=confirmed`);
   };
 
   return (
@@ -71,7 +80,7 @@ const BookingSummary = () => {
         <button onClick={() => setStep(3)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-4 w-4" /> Back
         </button>
-        <h3 className="font-display text-lg font-semibold">Review & Pay</h3>
+        <h3 className="font-display text-lg font-semibold">Checkout</h3>
         <div className="w-16" />
       </div>
 
@@ -101,17 +110,41 @@ const BookingSummary = () => {
           <p className="text-sm text-muted-foreground">{customerDetails.email} • {customerDetails.phone}</p>
         </div>
 
+        <div className="bg-card rounded-xl border border-border shadow-luxury p-4 space-y-4">
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <LockKeyhole className="h-4 w-4 text-accent" />
+            Demo card checkout
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label className="text-sm font-medium mb-1.5 block">Cardholder name</label>
+              <Input value={cardName} onChange={(e) => setCardName(e.target.value)} placeholder="Name on card" className="bg-card" />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="text-sm font-medium mb-1.5 block">Card number</label>
+              <Input value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} placeholder="4242 4242 4242 4242" className="bg-card" inputMode="numeric" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Expiry</label>
+              <Input value={expiry} onChange={(e) => setExpiry(e.target.value)} placeholder="MM/YY" className="bg-card" inputMode="numeric" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">CVC</label>
+              <Input value={cvc} onChange={(e) => setCvc(e.target.value)} placeholder="123" className="bg-card" inputMode="numeric" />
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">Demo mode collects checkout details in the UI only and marks the booking as paid + confirmed so you can test the full reservation flow before adding real payment keys.</p>
+        </div>
+
         <div className="bg-card border border-accent/30 rounded-lg p-4 flex items-center justify-between">
           <span className="font-display font-semibold">Total</span>
           <span className="font-display text-2xl font-bold text-accent">${totalPrice.toFixed(2)}</span>
         </div>
       </div>
 
-      <Button variant="gold" size="lg" className="w-full" onClick={handlePayment} disabled={isProcessing}>
-        {isProcessing ? 'Creating reservation...' : <span className="flex items-center gap-2"><CreditCard className="h-4 w-4" /> Continue to Payment</span>}
+      <Button variant="gold" size="lg" className="w-full" onClick={handlePayment} disabled={isProcessing || !canPay}>
+        {isProcessing ? 'Processing payment...' : <span className="flex items-center gap-2"><CreditCard className="h-4 w-4" /> Pay & Confirm Reservation</span>}
       </Button>
-
-      <p className="text-xs text-center text-muted-foreground">Demo payment mode keeps the booking pending for now. When you add real Stripe keys later, payment success will auto-confirm the reservation.</p>
     </div>
   );
 };

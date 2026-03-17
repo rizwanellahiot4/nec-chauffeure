@@ -24,22 +24,25 @@ const BookingConfirmation = () => {
             <div className="h-16 w-16 rounded-full gold-gradient flex items-center justify-center mx-auto mb-6">
               {isPending ? <Clock3 className="h-8 w-8 text-accent-foreground" /> : <CheckCircle2 className="h-8 w-8 text-accent-foreground" />}
             </div>
-            <h1 className="font-display text-2xl font-bold mb-2">{isPending ? 'Booking Pending Payment' : 'Booking Confirmed!'}</h1>
+            <h1 className="font-display text-2xl font-bold mb-2">{isPending ? 'Booking Pending Payment' : 'Reservation Confirmed'}</h1>
             <p className="text-muted-foreground mb-6">
               {isPending
                 ? 'Your reservation was created successfully and is waiting for payment confirmation.'
-                : 'Your premium ride has been reserved successfully.'}
+                : 'Your payment was accepted and your chauffeur reservation is confirmed.'}
             </p>
 
-            <div className="bg-secondary rounded-lg p-4 mb-6">
-              <p className="text-sm text-muted-foreground">Booking Reference</p>
-              <p className="font-display text-xl font-bold text-accent">{bookingId}</p>
+            <div className="bg-secondary rounded-lg p-4 mb-6 space-y-2">
+              <div>
+                <p className="text-sm text-muted-foreground">Booking Reference</p>
+                <p className="font-display text-xl font-bold text-accent">{bookingId}</p>
+              </div>
+              <div className="text-xs text-muted-foreground">Keep this reference for booking updates or support.</div>
             </div>
 
             <p className="text-sm text-muted-foreground mb-6">
               {isPending
-                ? 'Demo mode is active. Once you add real payment keys in the admin panel, successful payment will automatically confirm bookings.'
-                : 'A confirmation email has been sent with your trip details. Our chauffeur will be ready at the scheduled time.'}
+                ? 'Once live payment keys are connected, successful checkout will update this automatically.'
+                : 'You can now return home or make another reservation.'}
             </p>
 
             <Button variant="gold" asChild className="w-full">

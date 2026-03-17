@@ -32,60 +32,87 @@ const checkAdminAccess = async (session: Session | null) => {
 };
 
 export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [session, setSession] = useState<Session | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
 
-    const syncSession = async (nextSession: Session | null) => {
-      if (!mounted) return;
-      setSession(nextSession);
-      const isAdmin = await checkAdminAccess(nextSession);
+    const finish = (isAdmin: boolean) => {
       if (!mounted) return;
       setIsAuthenticated(isAdmin);
       setIsLoading(false);
-      if (nextSession && !isAdmin) {
-        await supabase.auth.signOut();
-      }
     };
 
-    supabase.auth.getSession().then(({ data }) => {
-      void syncSession(data.session);
-    });
+    const syncSession = async (nextSession: Session | null) => {
+      try {
+        if (!nextSession?.user) {
+          finish(false);
+          return;
+        }
+
+        const isAdmin = await checkAdminAccess(nextSession);
+        finish(isAdmin);
+
+        if (!isAdmin) {
+          await supabase.auth.signOut();
+        }
+      } catch {
+        finish(false);
+      }
+    };
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       void syncSession(nextSession);
     });
 
+    void supabase.auth
+      .getSession()
+      .then(({ data }) => syncSession(data.session))
+      .catch(() => finish(false));
+
+    const timeoutId = window.setTimeout(() => {
+      finish(false);
+    }, 2500);
+
     return () => {
       mounted = false;
+      window.clearTimeout(timeoutId);
       listener.subscription.unsubscribe();
     };
   }, []);
 
-  const value = useMemo(() => ({
-    isAuthenticated,
-    isLoading,
-    login: async (email: string, password: string) => {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return false;
-      const { data } = await supabase.auth.getSession();
-      const isAdmin = await checkAdminAccess(data.session);
-      setIsAuthenticated(isAdmin);
-      setSession(data.session);
-      if (!isAdmin) {
+  const value = useMemo(
+    () => ({
+      isAuthenticated,
+      isLoading,
+      login: async (email: string, password: string) => {
+        setIsLoading(true);
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          setIsLoading(false);
+          return false;
+        }
+
+        const { data } = await supabase.auth.getSession();
+        const isAdmin = await checkAdminAccess(data.session);
+        setIsAuthenticated(isAdmin);
+        setIsLoading(false);
+
+        if (!isAdmin) {
+          await supabase.auth.signOut();
+        }
+
+        return isAdmin;
+      },
+      logout: async () => {
         await supabase.auth.signOut();
-      }
-      return isAdmin;
-    },
-    logout: async () => {
-      await supabase.auth.signOut();
-      setSession(null);
-      setIsAuthenticated(false);
-    },
-  }), [isAuthenticated]);
+        setIsAuthenticated(false);
+        setIsLoading(false);
+      },
+    }),
+    [isAuthenticated, isLoading],
+  );
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;
 };

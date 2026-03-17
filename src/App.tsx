@@ -17,14 +17,18 @@ const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAdminAuth();
-  if (isLoading) return <div className="min-h-screen bg-background" />;
+  if (isLoading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center text-sm text-muted-foreground">Loading admin…</div>;
+  }
   if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
   return <>{children}</>;
 };
 
 const AdminRedirect = () => {
   const { isAuthenticated, isLoading } = useAdminAuth();
-  if (isLoading) return <div className="min-h-screen bg-background" />;
+  if (isLoading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center text-sm text-muted-foreground">Loading admin…</div>;
+  }
   if (isAuthenticated) return <Navigate to="/admin" replace />;
   return <AdminLogin />;
 };

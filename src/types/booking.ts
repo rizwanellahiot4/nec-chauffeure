@@ -71,6 +71,7 @@ export interface PricingConfig {
   airportSurcharge: number;
   childSeatPrice: number;
   distanceUnit?: 'km' | 'mi';
+  hourlyDistanceUnit?: 'kmh' | 'mph';
   fromAirportSurcharge?: number;
   toAirportSurcharge?: number;
   privateTourBaseFare?: number;

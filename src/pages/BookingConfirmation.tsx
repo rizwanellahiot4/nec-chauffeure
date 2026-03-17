@@ -1,5 +1,5 @@
 import { useSearchParams, Link } from 'react-router-dom';
-import { CheckCircle2, Calendar, Clock, MapPin, Car } from 'lucide-react';
+import { CheckCircle2, Clock3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 const BookingConfirmation = () => {
   const [params] = useSearchParams();
   const bookingId = params.get('id') || 'BK-DEMO';
+  const status = params.get('status') || 'confirmed';
+  const isPending = status === 'pending';
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -20,10 +22,14 @@ const BookingConfirmation = () => {
             className="bg-card rounded-xl shadow-luxury-lg border border-border p-8 text-center"
           >
             <div className="h-16 w-16 rounded-full gold-gradient flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="h-8 w-8 text-accent-foreground" />
+              {isPending ? <Clock3 className="h-8 w-8 text-accent-foreground" /> : <CheckCircle2 className="h-8 w-8 text-accent-foreground" />}
             </div>
-            <h1 className="font-display text-2xl font-bold mb-2">Booking Confirmed!</h1>
-            <p className="text-muted-foreground mb-6">Your premium ride has been reserved successfully.</p>
+            <h1 className="font-display text-2xl font-bold mb-2">{isPending ? 'Booking Pending Payment' : 'Booking Confirmed!'}</h1>
+            <p className="text-muted-foreground mb-6">
+              {isPending
+                ? 'Your reservation was created successfully and is waiting for payment confirmation.'
+                : 'Your premium ride has been reserved successfully.'}
+            </p>
 
             <div className="bg-secondary rounded-lg p-4 mb-6">
               <p className="text-sm text-muted-foreground">Booking Reference</p>
@@ -31,7 +37,9 @@ const BookingConfirmation = () => {
             </div>
 
             <p className="text-sm text-muted-foreground mb-6">
-              A confirmation email has been sent with your trip details. Our chauffeur will be ready at the scheduled time.
+              {isPending
+                ? 'Demo mode is active. Once you add real payment keys in the admin panel, successful payment will automatically confirm bookings.'
+                : 'A confirmation email has been sent with your trip details. Our chauffeur will be ready at the scheduled time.'}
             </p>
 
             <Button variant="gold" asChild className="w-full">

@@ -4,11 +4,39 @@ import { supabase } from '@/integrations/supabase/client';
 import { defaultVehicles } from '@/data/vehicles';
 import type { Booking, BrandSettings, MapSettings, PricingConfig, Vehicle } from '@/types/booking';
 
-const singletonQuery = async <T,>(table: 'brand_settings' | 'pricing_settings' | 'map_settings', fallback: T): Promise<T> => {
-  const { data, error } = await supabase.from(table).select('*').limit(1).maybeSingle();
-  if (error) throw error;
-  if (!data) return fallback;
-  return data as T;
+const defaultBrandSettings: BrandSettings = {
+  businessName: 'EliteDrive',
+  businessEmail: 'hello@elitedrive.com',
+  businessPhone: '+1 (555) 123-4567',
+  businessAddress: 'New York, NY',
+  primaryColor: '222.2 47.4% 11.2%',
+  secondaryColor: '39 48% 56%',
+  footerText: '© EliteDrive. All rights reserved.',
+  businessLogoUrl: null,
+};
+
+const defaultPricingSettings: PricingConfig = {
+  baseFare: 15,
+  pricePerKm: 2.5,
+  hourlyRate: 65,
+  airportSurcharge: 20,
+  childSeatPrice: 10,
+  distanceUnit: 'km',
+  fromAirportSurcharge: 20,
+  toAirportSurcharge: 20,
+  privateTourBaseFare: 120,
+  hourlyChauffeurBaseFare: 65,
+  rearFacingSeatPrice: 15,
+  forwardFacingSeatPrice: 12,
+  boosterSeatPrice: 10,
+  hourlyDistanceUnit: 'kmh',
+};
+
+const defaultMapSettings: MapSettings = {
+  centerLat: 40.7128,
+  centerLng: -74.006,
+  zoom: 12,
+  countryCode: 'us',
 };
 
 const subscribeToTable = (
@@ -25,6 +53,53 @@ const subscribeToTable = (
 
   return () => {
     supabase.removeChannel(channel);
+  };
+};
+
+const mapBrandSettingsRow = (row?: Record<string, any> | null): BrandSettings => {
+  if (!row) return defaultBrandSettings;
+
+  return {
+    businessName: row.business_name ?? defaultBrandSettings.businessName,
+    businessEmail: row.business_email ?? defaultBrandSettings.businessEmail,
+    businessPhone: row.business_phone ?? defaultBrandSettings.businessPhone,
+    businessAddress: row.business_address ?? defaultBrandSettings.businessAddress,
+    primaryColor: row.primary_brand_color ?? defaultBrandSettings.primaryColor,
+    secondaryColor: row.secondary_brand_color ?? defaultBrandSettings.secondaryColor,
+    footerText: row.footer_copyright_text ?? defaultBrandSettings.footerText,
+    businessLogoUrl: row.business_logo_url ?? null,
+  };
+};
+
+const mapPricingSettingsRow = (row?: Record<string, any> | null): PricingConfig => {
+  if (!row) return defaultPricingSettings;
+
+  return {
+    baseFare: Number(row.base_fare ?? defaultPricingSettings.baseFare),
+    pricePerKm: Number(row.price_per_km ?? defaultPricingSettings.pricePerKm),
+    hourlyRate: Number(row.hourly_rate ?? defaultPricingSettings.hourlyRate),
+    airportSurcharge: Number(row.airport_surcharge ?? defaultPricingSettings.airportSurcharge),
+    childSeatPrice: Number(row.child_seat_price ?? defaultPricingSettings.childSeatPrice),
+    distanceUnit: row.distance_unit === 'mi' ? 'mi' : 'km',
+    fromAirportSurcharge: Number(row.from_airport_surcharge ?? defaultPricingSettings.fromAirportSurcharge),
+    toAirportSurcharge: Number(row.to_airport_surcharge ?? defaultPricingSettings.toAirportSurcharge),
+    privateTourBaseFare: Number(row.private_tour_base_fare ?? defaultPricingSettings.privateTourBaseFare),
+    hourlyChauffeurBaseFare: Number(row.hourly_chauffeur_base_fare ?? defaultPricingSettings.hourlyChauffeurBaseFare),
+    rearFacingSeatPrice: Number(row.rear_facing_seat_price ?? defaultPricingSettings.rearFacingSeatPrice),
+    forwardFacingSeatPrice: Number(row.forward_facing_seat_price ?? defaultPricingSettings.forwardFacingSeatPrice),
+    boosterSeatPrice: Number(row.booster_seat_price ?? defaultPricingSettings.boosterSeatPrice),
+    hourlyDistanceUnit: row.hourly_distance_unit ?? defaultPricingSettings.hourlyDistanceUnit,
+  };
+};
+
+const mapMapSettingsRow = (row?: Record<string, any> | null): MapSettings => {
+  if (!row) return defaultMapSettings;
+
+  return {
+    centerLat: Number(row.center_lat ?? defaultMapSettings.centerLat),
+    centerLng: Number(row.center_lng ?? defaultMapSettings.centerLng),
+    zoom: Number(row.zoom ?? defaultMapSettings.zoom),
+    countryCode: row.country_code ?? defaultMapSettings.countryCode,
   };
 };
 
@@ -47,8 +122,8 @@ export const mapBookingRowToBooking = (row: Record<string, any>): Booking => {
       dropoffLng: Number(row.dropoff_lng),
       date: pickupAt.toISOString().split('T')[0],
       time: pickupAt.toISOString().slice(11, 16),
-      passengers: row.passengers,
-      luggage: row.luggage,
+      passengers: Number(row.passengers),
+      luggage: Number(row.luggage),
       childSeat: Boolean(row.child_seat),
       childSeatType: row.child_seat_type ?? 'none',
       serviceType: row.service_type,
@@ -59,8 +134,8 @@ export const mapBookingRowToBooking = (row: Record<string, any>): Booking => {
       id: row.vehicle_id ?? 'unknown',
       name: row.vehicle_name_snapshot,
       image: '',
-      passengers: row.passengers,
-      luggage: row.luggage,
+      passengers: Number(row.passengers),
+      luggage: Number(row.luggage),
       priceMultiplier: 1,
       description: row.vehicle_name_snapshot,
     },
@@ -80,16 +155,11 @@ export const useBrandSettings = () => {
   const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: ['brand-settings'],
-    queryFn: () => singletonQuery<BrandSettings>('brand_settings', {
-      businessName: 'EliteDrive',
-      businessEmail: 'hello@elitedrive.com',
-      businessPhone: '+1 (555) 123-4567',
-      businessAddress: 'New York, NY',
-      primaryColor: '222.2 47.4% 11.2%',
-      secondaryColor: '39 48% 56%',
-      footerText: '© EliteDrive. All rights reserved.',
-      businessLogoUrl: null,
-    }),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('brand_settings').select('*').limit(1).maybeSingle();
+      if (error) throw error;
+      return mapBrandSettingsRow(data as Record<string, any> | null);
+    },
     staleTime: 10_000,
   });
 
@@ -101,21 +171,11 @@ export const usePricingSettings = () => {
   const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: ['pricing-settings'],
-    queryFn: () => singletonQuery<PricingConfig>('pricing_settings', {
-      baseFare: 15,
-      pricePerKm: 2.5,
-      hourlyRate: 65,
-      airportSurcharge: 20,
-      childSeatPrice: 10,
-      distanceUnit: 'km',
-      fromAirportSurcharge: 20,
-      toAirportSurcharge: 20,
-      privateTourBaseFare: 120,
-      hourlyChauffeurBaseFare: 65,
-      rearFacingSeatPrice: 15,
-      forwardFacingSeatPrice: 12,
-      boosterSeatPrice: 10,
-    }),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('pricing_settings').select('*').limit(1).maybeSingle();
+      if (error) throw error;
+      return mapPricingSettingsRow(data as Record<string, any> | null);
+    },
     staleTime: 10_000,
   });
 
@@ -127,12 +187,11 @@ export const useMapSettings = () => {
   const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: ['map-settings'],
-    queryFn: () => singletonQuery<MapSettings>('map_settings', {
-      centerLat: 40.7128,
-      centerLng: -74.006,
-      zoom: 12,
-      countryCode: 'us',
-    }),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('map_settings').select('*').limit(1).maybeSingle();
+      if (error) throw error;
+      return mapMapSettingsRow(data as Record<string, any> | null);
+    },
     staleTime: 10_000,
   });
 
@@ -168,6 +227,34 @@ export const useVehicles = () => {
   });
 
   useEffect(() => subscribeToTable(['vehicles'], 'vehicles', queryClient), [queryClient]);
+  return query;
+};
+
+export const useAdminVehicles = () => {
+  const queryClient = useQueryClient();
+  const query = useQuery({
+    queryKey: ['admin-vehicles'],
+    queryFn: async (): Promise<Vehicle[]> => {
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      return (data ?? []).map((vehicle) => ({
+        id: vehicle.id,
+        name: vehicle.name,
+        image: vehicle.image,
+        passengers: vehicle.passengers,
+        luggage: vehicle.luggage,
+        priceMultiplier: Number(vehicle.price_multiplier),
+        description: vehicle.description,
+      }));
+    },
+  });
+
+  useEffect(() => subscribeToTable(['admin-vehicles'], 'vehicles', queryClient), [queryClient]);
   return query;
 };
 

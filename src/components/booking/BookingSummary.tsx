@@ -8,6 +8,8 @@ import { formatChildSeatType, formatServiceType } from '@/lib/booking-options';
 import { toast } from 'sonner';
 import { usePricingSettings } from '@/hooks/use-live-data';
 
+const createBookingReference = () => `BK-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
+
 const BookingSummary = () => {
   const { formData, selectedVehicle, customerDetails, routeInfo, totalPrice, setStep } = useBooking();
   const { data: pricing } = usePricingSettings();
@@ -18,11 +20,13 @@ const BookingSummary = () => {
     if (!selectedVehicle || !routeInfo) return;
     setIsProcessing(true);
 
+    const bookingReference = createBookingReference();
     const pickupAt = new Date(`${formData.date}T${formData.time}`);
     const { data: auth } = await supabase.auth.getUser();
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('bookings')
       .insert({
+        booking_reference: bookingReference,
         customer_name: customerDetails.fullName,
         customer_email: customerDetails.email,
         customer_phone: customerDetails.phone,
@@ -49,9 +53,7 @@ const BookingSummary = () => {
         created_by: auth.user?.id ?? null,
         status: 'pending',
         payment_status: 'pending',
-      })
-      .select('booking_reference')
-      .single();
+      });
 
     setIsProcessing(false);
 
@@ -60,7 +62,7 @@ const BookingSummary = () => {
       return;
     }
 
-    navigate(`/booking/confirmation?id=${data.booking_reference}`);
+    navigate(`/booking/confirmation?id=${bookingReference}&status=pending`);
   };
 
   return (
@@ -109,7 +111,7 @@ const BookingSummary = () => {
         {isProcessing ? 'Creating reservation...' : <span className="flex items-center gap-2"><CreditCard className="h-4 w-4" /> Continue to Payment</span>}
       </Button>
 
-      <p className="text-xs text-center text-muted-foreground">Right now this creates a live pending reservation record; final auto-confirm after successful Stripe payment is the next backend step.</p>
+      <p className="text-xs text-center text-muted-foreground">Demo payment mode keeps the booking pending for now. When you add real Stripe keys later, payment success will auto-confirm the reservation.</p>
     </div>
   );
 };

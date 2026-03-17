@@ -44,6 +44,7 @@ const defaultPricing: PricingConfig = {
   airportSurcharge: 20,
   childSeatPrice: 10,
   distanceUnit: 'km',
+  hourlyDistanceUnit: 'kmh',
   fromAirportSurcharge: 20,
   toAirportSurcharge: 20,
   privateTourBaseFare: 120,

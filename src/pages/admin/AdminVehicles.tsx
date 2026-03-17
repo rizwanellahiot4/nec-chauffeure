@@ -1,43 +1,81 @@
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { defaultVehicles } from '@/data/vehicles';
 import { Vehicle } from '@/types/booking';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Plus, Pencil, Trash2, Users, Briefcase } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAdminVehicles } from '@/hooks/use-live-data';
+
+const emptyForm = { name: '', description: '', passengers: 3, luggage: 2, priceMultiplier: 1.0, image: '' };
 
 const AdminVehicles = () => {
-  const [vehicles, setVehicles] = useState<Vehicle[]>(defaultVehicles);
+  const { data: vehicles = [] } = useAdminVehicles();
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState({ name: '', description: '', passengers: 3, luggage: 2, priceMultiplier: 1.0 });
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState(emptyForm);
 
   const openNew = () => {
     setEditVehicle(null);
-    setForm({ name: '', description: '', passengers: 3, luggage: 2, priceMultiplier: 1.0 });
+    setForm(emptyForm);
     setDialogOpen(true);
   };
 
   const openEdit = (v: Vehicle) => {
     setEditVehicle(v);
-    setForm({ name: v.name, description: v.description, passengers: v.passengers, luggage: v.luggage, priceMultiplier: v.priceMultiplier });
+    setForm({
+      name: v.name,
+      description: v.description,
+      passengers: v.passengers,
+      luggage: v.luggage,
+      priceMultiplier: v.priceMultiplier,
+      image: v.image,
+    });
     setDialogOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name.trim()) return;
-    if (editVehicle) {
-      setVehicles(prev => prev.map(v => v.id === editVehicle.id ? { ...v, ...form } : v));
-    } else {
-      setVehicles(prev => [...prev, { id: Date.now().toString(), image: '', ...form }]);
+    setSaving(true);
+
+    const payload = {
+      name: form.name,
+      description: form.description,
+      passengers: form.passengers,
+      luggage: form.luggage,
+      price_multiplier: form.priceMultiplier,
+      image: form.image,
+      is_active: true,
+    };
+
+    const query = editVehicle
+      ? supabase.from('vehicles').update(payload).eq('id', editVehicle.id)
+      : supabase.from('vehicles').insert(payload);
+
+    const { error } = await query;
+    setSaving(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
     }
+
+    toast.success(editVehicle ? 'Vehicle updated' : 'Vehicle added');
     setDialogOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    setVehicles(prev => prev.filter(v => v.id !== id));
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from('vehicles').delete().eq('id', id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    toast.success('Vehicle deleted');
   };
 
   return (
@@ -95,28 +133,32 @@ const AdminVehicles = () => {
             <div className="space-y-4 pt-2">
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Vehicle Name</label>
-                <Input value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Executive Sedan" />
+                <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. Executive Sedan" />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Description</label>
-                <Input value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} placeholder="e.g. Mercedes-Benz E-Class" />
+                <Input value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="e.g. Mercedes-Benz E-Class" />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1.5 block">Vehicle Image URL</label>
+                <Input value={form.image} onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))} placeholder="/images/car.png or https://..." />
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Passengers</label>
-                  <Input type="number" value={form.passengers} onChange={(e) => setForm(f => ({ ...f, passengers: parseInt(e.target.value) || 0 }))} />
+                  <Input type="number" value={form.passengers} onChange={(e) => setForm((f) => ({ ...f, passengers: parseInt(e.target.value) || 0 }))} />
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Luggage</label>
-                  <Input type="number" value={form.luggage} onChange={(e) => setForm(f => ({ ...f, luggage: parseInt(e.target.value) || 0 }))} />
+                  <Input type="number" value={form.luggage} onChange={(e) => setForm((f) => ({ ...f, luggage: parseInt(e.target.value) || 0 }))} />
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Price ×</label>
-                  <Input type="number" step="0.1" value={form.priceMultiplier} onChange={(e) => setForm(f => ({ ...f, priceMultiplier: parseFloat(e.target.value) || 1 }))} />
+                  <Input type="number" step="0.1" value={form.priceMultiplier} onChange={(e) => setForm((f) => ({ ...f, priceMultiplier: parseFloat(e.target.value) || 1 }))} />
                 </div>
               </div>
-              <Button variant="gold" className="w-full" onClick={handleSave}>
-                {editVehicle ? 'Save Changes' : 'Add Vehicle'}
+              <Button variant="gold" className="w-full" onClick={handleSave} disabled={saving}>
+                {saving ? 'Saving...' : editVehicle ? 'Save Changes' : 'Add Vehicle'}
               </Button>
             </div>
           </DialogContent>

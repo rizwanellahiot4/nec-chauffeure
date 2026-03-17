@@ -87,84 +87,116 @@ const AdminBookings = () => {
           </Select>
         </div>
 
-        <div className="bg-card rounded-xl border border-border shadow-luxury overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-secondary/50">
-                  <th className="text-left p-3 font-medium text-muted-foreground">Ref</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Customer</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground hidden lg:table-cell">Route</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground hidden md:table-cell">Date</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Service</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Amount</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Payment</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Status</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">View</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((booking: Booking) => (
-                  <tr key={booking.dbId ?? booking.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-                    <td className="p-3 font-mono text-xs">{booking.id}</td>
-                    <td className="p-3">
-                      <p className="font-medium">{booking.customer.fullName}</p>
-                      <p className="text-xs text-muted-foreground">{booking.customer.email}</p>
-                    </td>
-                    <td className="p-3 text-muted-foreground hidden lg:table-cell truncate max-w-[240px]">
-                      {booking.formData.pickupAddress} → {booking.formData.dropoffAddress}
-                    </td>
-                    <td className="p-3 hidden md:table-cell">
-                      <div className="flex items-center gap-1 text-muted-foreground">
-                        <Calendar className="h-3.5 w-3.5" />
-                        <span className="text-xs">{booking.formData.date} {booking.formData.time}</span>
-                      </div>
-                    </td>
-                    <td className="p-3 text-xs">{formatServiceType(booking.formData.serviceType)}</td>
-                    <td className="p-3 font-medium">${booking.totalPrice.toFixed(2)}</td>
-                    <td className="p-3 min-w-[160px]">
-                      <Select
-                        value={booking.paymentStatus}
-                        onValueChange={(value) => handleUpdatePaymentStatus(booking, value as Booking['paymentStatus'])}
-                        disabled={savingPaymentId === booking.dbId}
-                      >
-                        <SelectTrigger className="h-8 bg-card">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {paymentStatusOptions.map((status) => (
-                            <SelectItem key={status} value={status}>{status}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </td>
-                    <td className="p-3 min-w-[160px]">
-                      <Select
-                        value={booking.status}
-                        onValueChange={(value) => handleUpdateStatus(booking, value as Booking['status'])}
-                        disabled={savingStatusId === booking.dbId}
-                      >
-                        <SelectTrigger className="h-8 bg-card">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {statusOptions.map((status) => (
-                            <SelectItem key={status} value={status}>{status}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </td>
-                    <td className="p-3">
-                      <Button variant="outline" size="sm" onClick={() => setSelectedBooking(booking)}>
-                        <Eye className="h-3.5 w-3.5 mr-1" /> View
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {filtered.length === 0 && <div className="p-8 text-center text-muted-foreground text-sm">No live bookings found</div>}
+        {filtered.length === 0 && (
+          <div className="p-12 text-center text-muted-foreground text-sm bg-card rounded-xl border border-border shadow-luxury">No live bookings found</div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {filtered.map((booking: Booking) => (
+            <div
+              key={booking.dbId ?? booking.id}
+              className="bg-card rounded-xl border border-border shadow-luxury hover:shadow-luxury-lg transition-shadow flex flex-col overflow-hidden"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 pt-4 pb-2">
+                <span className="font-mono text-[11px] text-muted-foreground bg-secondary px-2 py-0.5 rounded">{booking.id}</span>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide uppercase ${
+                  booking.status === 'confirmed'
+                    ? 'bg-accent/20 text-accent'
+                    : booking.status === 'completed'
+                      ? 'bg-emerald-500/15 text-emerald-600'
+                      : booking.status === 'pending'
+                        ? 'bg-secondary text-muted-foreground'
+                        : 'bg-destructive/15 text-destructive'
+                }`}>
+                  {booking.status}
+                </span>
+              </div>
+
+              {/* Customer & Service */}
+              <div className="px-4 pb-3 space-y-2.5 flex-1">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-9 w-9 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                    <User className="h-4 w-4 text-accent" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm truncate">{booking.customer.fullName}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{booking.customer.email}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span>{booking.formData.date} · {booking.formData.time}</span>
+                </div>
+
+                <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                  <MapPin className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
+                  <span className="line-clamp-2">{booking.formData.pickupAddress.split(',')[0]} → {booking.formData.dropoffAddress.split(',')[0]}</span>
+                </div>
+
+                <div className="flex items-center gap-2 text-xs">
+                  <Car className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">{formatServiceType(booking.formData.serviceType)}</span>
+                </div>
+              </div>
+
+              {/* Price & Payment */}
+              <div className="border-t border-border px-4 py-3 bg-secondary/30 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <DollarSign className="h-4 w-4 text-accent" />
+                    <span className="font-display font-bold text-lg">${booking.totalPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <CreditCard className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className={`text-[11px] font-medium ${
+                      booking.paymentStatus === 'paid' ? 'text-emerald-600' : booking.paymentStatus === 'refunded' ? 'text-destructive' : 'text-muted-foreground'
+                    }`}>
+                      {booking.paymentStatus}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Controls row */}
+                <div className="flex gap-2">
+                  <Select
+                    value={booking.status}
+                    onValueChange={(value) => handleUpdateStatus(booking, value as Booking['status'])}
+                    disabled={savingStatusId === booking.dbId}
+                  >
+                    <SelectTrigger className="h-8 bg-card text-xs flex-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {statusOptions.map((s) => (
+                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={booking.paymentStatus}
+                    onValueChange={(value) => handleUpdatePaymentStatus(booking, value as Booking['paymentStatus'])}
+                    disabled={savingPaymentId === booking.dbId}
+                  >
+                    <SelectTrigger className="h-8 bg-card text-xs flex-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {paymentStatusOptions.map((s) => (
+                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Button variant="outline" size="sm" className="h-8 px-2.5" onClick={() => setSelectedBooking(booking)}>
+                    <Eye className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

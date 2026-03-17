@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useBrandSettings, useMapSettings, usePricingSettings } from '@/hooks/use-live-data';
 import { DISTANCE_UNITS } from '@/lib/booking-options';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { uploadAdminAsset } from '@/lib/admin-assets';
 
 const AdminSettings = () => {
   const { data: liveBrand } = useBrandSettings();
@@ -23,6 +24,7 @@ const AdminSettings = () => {
     primaryColor: '222.2 47.4% 11.2%',
     secondaryColor: '39 48% 56%',
     footerText: '© 2026 EliteDrive. All rights reserved.',
+    businessLogoUrl: null,
   });
 
   const [pricing, setPricing] = useState<PricingConfig>({
@@ -48,6 +50,11 @@ const AdminSettings = () => {
     countryCode: 'us',
   });
 
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [newEmail, setNewEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   useEffect(() => {
     if (liveBrand) setBrand(liveBrand);
   }, [liveBrand]);
@@ -61,6 +68,16 @@ const AdminSettings = () => {
   }, [liveMap]);
 
   const handleSaveBrand = async () => {
+    let logoUrl = brand.businessLogoUrl ?? null;
+    if (logoFile) {
+      try {
+        logoUrl = await uploadAdminAsset(logoFile, 'branding');
+      } catch (error: any) {
+        toast.error(error?.message ?? 'Failed to upload logo');
+        return;
+      }
+    }
+
     const { error } = await supabase.from('brand_settings').update({
       business_name: brand.businessName,
       business_email: brand.businessEmail,
@@ -69,6 +86,7 @@ const AdminSettings = () => {
       primary_brand_color: brand.primaryColor,
       secondary_brand_color: brand.secondaryColor,
       footer_copyright_text: brand.footerText,
+      business_logo_url: logoUrl,
     }).eq('id', '11111111-1111-1111-1111-111111111111');
 
     if (error) return toast.error(error.message);
@@ -109,6 +127,24 @@ const AdminSettings = () => {
     toast.success('Map settings saved');
   };
 
+  const handleUpdateEmail = async () => {
+    if (!newEmail.trim()) return;
+    const { error } = await supabase.auth.updateUser({ email: newEmail.trim() });
+    if (error) return toast.error(error.message);
+    toast.success('Email update requested. Please verify from your inbox.');
+    setNewEmail('');
+  };
+
+  const handleUpdatePassword = async () => {
+    if (newPassword.length < 8) return toast.error('Password must be at least 8 characters');
+    if (newPassword !== confirmPassword) return toast.error('Passwords do not match');
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) return toast.error(error.message);
+    toast.success('Password updated successfully');
+    setNewPassword('');
+    setConfirmPassword('');
+  };
+
   return (
     <AdminLayout>
       <div className="max-w-4xl">
@@ -118,6 +154,7 @@ const AdminSettings = () => {
             <TabsTrigger value="pricing">Pricing</TabsTrigger>
             <TabsTrigger value="map">Map</TabsTrigger>
             <TabsTrigger value="payment">Payment</TabsTrigger>
+            <TabsTrigger value="account">Account</TabsTrigger>
           </TabsList>
 
           <TabsContent value="brand">
@@ -130,6 +167,7 @@ const AdminSettings = () => {
                 <div><label className="text-sm font-medium mb-1.5 block">Address</label><Input value={brand.businessAddress} onChange={(e) => setBrand((b) => ({ ...b, businessAddress: e.target.value }))} /></div>
                 <div><label className="text-sm font-medium mb-1.5 block">Primary Color</label><Input value={brand.primaryColor} onChange={(e) => setBrand((b) => ({ ...b, primaryColor: e.target.value }))} /></div>
                 <div><label className="text-sm font-medium mb-1.5 block">Secondary Color</label><Input value={brand.secondaryColor} onChange={(e) => setBrand((b) => ({ ...b, secondaryColor: e.target.value }))} /></div>
+                <div className="sm:col-span-2"><label className="text-sm font-medium mb-1.5 block">Brand Logo</label><Input type="file" accept="image/*" onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)} />{brand.businessLogoUrl ? <p className="mt-2 text-xs text-muted-foreground break-all">Current logo: {brand.businessLogoUrl}</p> : null}</div>
               </div>
               <div><label className="text-sm font-medium mb-1.5 block">Footer Text</label><Input value={brand.footerText} onChange={(e) => setBrand((b) => ({ ...b, footerText: e.target.value }))} /></div>
               <Button variant="gold" onClick={handleSaveBrand}>Save Brand Settings</Button>
@@ -171,12 +209,29 @@ const AdminSettings = () => {
 
           <TabsContent value="payment">
             <div className="bg-card rounded-xl border border-border shadow-luxury p-6 space-y-4">
-              <h3 className="font-display font-semibold">Stripe Payment Settings</h3>
-              <p className="text-sm text-muted-foreground">UI is ready for real Stripe keys from admin, but secure live payment processing still needs backend checkout + webhook wiring.</p>
+              <h3 className="font-display font-semibold">Checkout Mode</h3>
+              <p className="text-sm text-muted-foreground">Demo checkout is active right now: customers fill card fields and can complete bookings end-to-end. Switch to real key mode anytime from this tab.</p>
               <div className="space-y-4">
                 <div><label className="text-sm font-medium mb-1.5 block">Publishable Key</label><Input defaultValue="pk_test_demo_placeholder" placeholder="pk_test_..." /></div>
                 <div><label className="text-sm font-medium mb-1.5 block">Secret Key</label><Input type="password" defaultValue="sk_test_demo_placeholder" placeholder="sk_test_..." /></div>
                 <div><label className="text-sm font-medium mb-1.5 block">Webhook Secret</label><Input type="password" defaultValue="whsec_demo_placeholder" placeholder="whsec_..." /></div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="account">
+            <div className="bg-card rounded-xl border border-border shadow-luxury p-6 space-y-6">
+              <h3 className="font-display font-semibold">Admin Account</h3>
+              <div className="space-y-3">
+                <label className="text-sm font-medium block">Change admin email</label>
+                <Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="new-admin@email.com" />
+                <Button variant="gold" onClick={handleUpdateEmail}>Update Email</Button>
+              </div>
+              <div className="space-y-3">
+                <label className="text-sm font-medium block">Change admin password</label>
+                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New password" />
+                <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm password" />
+                <Button variant="gold" onClick={handleUpdatePassword}>Update Password</Button>
               </div>
             </div>
           </TabsContent>

@@ -4,11 +4,12 @@ import { Vehicle } from '@/types/booking';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, Users, Briefcase } from 'lucide-react';
+import { Plus, Pencil, Trash2, Users, Briefcase, Upload } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminVehicles } from '@/hooks/use-live-data';
+import { uploadAdminAsset } from '@/lib/admin-assets';
 
 const emptyForm = { name: '', description: '', passengers: 3, luggage: 2, priceMultiplier: 1.0, image: '' };
 
@@ -17,16 +18,19 @@ const AdminVehicles = () => {
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [form, setForm] = useState(emptyForm);
 
   const openNew = () => {
     setEditVehicle(null);
+    setImageFile(null);
     setForm(emptyForm);
     setDialogOpen(true);
   };
 
   const openEdit = (v: Vehicle) => {
     setEditVehicle(v);
+    setImageFile(null);
     setForm({
       name: v.name,
       description: v.description,
@@ -42,13 +46,24 @@ const AdminVehicles = () => {
     if (!form.name.trim()) return;
     setSaving(true);
 
+    let imageUrl = form.image;
+    if (imageFile) {
+      try {
+        imageUrl = await uploadAdminAsset(imageFile, 'vehicles');
+      } catch (error: any) {
+        setSaving(false);
+        toast.error(error?.message ?? 'Failed to upload vehicle image');
+        return;
+      }
+    }
+
     const payload = {
       name: form.name,
       description: form.description,
       passengers: form.passengers,
       luggage: form.luggage,
       price_multiplier: form.priceMultiplier,
-      image: form.image,
+      image: imageUrl,
       is_active: true,
     };
 
@@ -139,9 +154,11 @@ const AdminVehicles = () => {
                 <label className="text-sm font-medium mb-1.5 block">Description</label>
                 <Input value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="e.g. Mercedes-Benz E-Class" />
               </div>
-              <div>
-                <label className="text-sm font-medium mb-1.5 block">Vehicle Image URL</label>
-                <Input value={form.image} onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))} placeholder="/images/car.png or https://..." />
+              <div className="space-y-2">
+                <label className="text-sm font-medium block">Vehicle Image Upload</label>
+                <Input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] ?? null)} />
+                {form.image ? <p className="text-xs text-muted-foreground break-all">Current: {form.image}</p> : null}
+                <p className="text-xs text-muted-foreground flex items-center gap-1"><Upload className="h-3 w-3" /> Uploading a new file will replace the current image URL.</p>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>

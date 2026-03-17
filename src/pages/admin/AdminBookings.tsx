@@ -12,12 +12,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const statusOptions: Booking['status'][] = ['pending', 'confirmed', 'completed', 'cancelled'];
+const paymentStatusOptions: Booking['paymentStatus'][] = ['pending', 'paid', 'refunded'];
 
 const AdminBookings = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [savingStatusId, setSavingStatusId] = useState<string | null>(null);
+  const [savingPaymentId, setSavingPaymentId] = useState<string | null>(null);
   const { data: bookings = [] } = useAdminBookings();
 
   const filtered = useMemo(
@@ -42,7 +44,25 @@ const AdminBookings = () => {
       toast.error(error.message);
       return;
     }
+    if (selectedBooking?.dbId === booking.dbId) {
+      setSelectedBooking({ ...selectedBooking, status: nextStatus });
+    }
     toast.success('Booking status updated');
+  };
+
+  const handleUpdatePaymentStatus = async (booking: Booking, nextPaymentStatus: Booking['paymentStatus']) => {
+    if (!booking.dbId) return;
+    setSavingPaymentId(booking.dbId);
+    const { error } = await supabase.from('bookings').update({ payment_status: nextPaymentStatus }).eq('id', booking.dbId);
+    setSavingPaymentId(null);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (selectedBooking?.dbId === booking.dbId) {
+      setSelectedBooking({ ...selectedBooking, paymentStatus: nextPaymentStatus });
+    }
+    toast.success('Payment status updated');
   };
 
   return (
@@ -102,10 +122,21 @@ const AdminBookings = () => {
                     </td>
                     <td className="p-3 text-xs">{formatServiceType(booking.formData.serviceType)}</td>
                     <td className="p-3 font-medium">${booking.totalPrice.toFixed(2)}</td>
-                    <td className="p-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${booking.paymentStatus === 'paid' ? 'bg-accent/20 text-accent' : 'bg-secondary text-muted-foreground'}`}>
-                        {booking.paymentStatus}
-                      </span>
+                    <td className="p-3 min-w-[160px]">
+                      <Select
+                        value={booking.paymentStatus}
+                        onValueChange={(value) => handleUpdatePaymentStatus(booking, value as Booking['paymentStatus'])}
+                        disabled={savingPaymentId === booking.dbId}
+                      >
+                        <SelectTrigger className="h-8 bg-card">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {paymentStatusOptions.map((status) => (
+                            <SelectItem key={status} value={status}>{status}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </td>
                     <td className="p-3 min-w-[160px]">
                       <Select
@@ -153,6 +184,8 @@ const AdminBookings = () => {
                 <div><p className="text-xs text-muted-foreground">Email</p><p>{selectedBooking.customer.email}</p></div>
                 <div><p className="text-xs text-muted-foreground">Phone</p><p>{selectedBooking.customer.phone}</p></div>
                 <div><p className="text-xs text-muted-foreground">Vehicle</p><p>{selectedBooking.vehicle.name}</p></div>
+                <div><p className="text-xs text-muted-foreground">Booking Status</p><p>{selectedBooking.status}</p></div>
+                <div><p className="text-xs text-muted-foreground">Payment Status</p><p>{selectedBooking.paymentStatus}</p></div>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Pickup Address</p>
@@ -168,8 +201,7 @@ const AdminBookings = () => {
                 <div><p className="text-xs text-muted-foreground">Total</p><p className="font-medium">${selectedBooking.totalPrice.toFixed(2)}</p></div>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Service & Notes</p>
-                <p>{formatServiceType(selectedBooking.formData.serviceType)}</p>
+                <p className="text-xs text-muted-foreground">Service & Notes</p><p>{formatServiceType(selectedBooking.formData.serviceType)}</p>
                 {selectedBooking.formData.notes ? <p className="text-muted-foreground mt-1">{selectedBooking.formData.notes}</p> : null}
               </div>
             </div>

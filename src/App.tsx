@@ -4,6 +4,7 @@ import { Toaster as Sonner } from '@/components/ui/sonner';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AdminAuthProvider, useAdminAuth } from '@/contexts/AdminAuthContext';
+import BrandThemeProvider from '@/components/BrandThemeProvider';
 import Index from './pages/Index';
 import BookingConfirmation from './pages/BookingConfirmation';
 import AdminLogin from './pages/admin/AdminLogin';

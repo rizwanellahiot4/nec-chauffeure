@@ -90,6 +90,11 @@ const AdminSettings = () => {
       business_address: brand.businessAddress,
       primary_brand_color: brand.primaryColor,
       secondary_brand_color: brand.secondaryColor,
+      background_color: brand.backgroundColor,
+      foreground_color: brand.foregroundColor,
+      card_color: brand.cardColor,
+      muted_color: brand.mutedColor,
+      border_color: brand.borderColor,
       footer_copyright_text: brand.footerText,
       business_logo_url: logoUrl,
     }).eq('id', '11111111-1111-1111-1111-111111111111');

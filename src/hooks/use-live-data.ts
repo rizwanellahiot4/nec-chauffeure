@@ -71,6 +71,11 @@ const mapBrandSettingsRow = (row?: Record<string, any> | null): BrandSettings =>
     businessAddress: row.business_address ?? defaultBrandSettings.businessAddress,
     primaryColor: row.primary_brand_color ?? defaultBrandSettings.primaryColor,
     secondaryColor: row.secondary_brand_color ?? defaultBrandSettings.secondaryColor,
+    backgroundColor: row.background_color ?? defaultBrandSettings.backgroundColor,
+    foregroundColor: row.foreground_color ?? defaultBrandSettings.foregroundColor,
+    cardColor: row.card_color ?? defaultBrandSettings.cardColor,
+    mutedColor: row.muted_color ?? defaultBrandSettings.mutedColor,
+    borderColor: row.border_color ?? defaultBrandSettings.borderColor,
     footerText: row.footer_copyright_text ?? defaultBrandSettings.footerText,
     businessLogoUrl: row.business_logo_url ?? null,
   };

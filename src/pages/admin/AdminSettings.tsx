@@ -23,6 +23,11 @@ const AdminSettings = () => {
     businessAddress: 'New York, NY',
     primaryColor: '222.2 47.4% 11.2%',
     secondaryColor: '39 48% 56%',
+    backgroundColor: '210 40% 98%',
+    foregroundColor: '222.2 47.4% 11.2%',
+    cardColor: '0 0% 100%',
+    mutedColor: '210 40% 96.1%',
+    borderColor: '214.3 31.8% 91.4%',
     footerText: '© 2026 EliteDrive. All rights reserved.',
     businessLogoUrl: null,
   });

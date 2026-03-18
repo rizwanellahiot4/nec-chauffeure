@@ -181,68 +181,38 @@ const AdminSettings = () => {
               </div>
 
               <div className="border-t border-border pt-6">
-                <h4 className="font-display font-semibold text-sm mb-4">Theme Colors <span className="text-muted-foreground font-normal">(HSL values, e.g. 222.2 47.4% 11.2%)</span></h4>
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-display font-semibold text-sm">Theme Colors</h4>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setBrand((b) => ({
+                      ...b,
+                      primaryColor: '222.2 47.4% 11.2%',
+                      secondaryColor: '39 48% 56%',
+                      backgroundColor: '210 40% 98%',
+                      foregroundColor: '222.2 47.4% 11.2%',
+                      cardColor: '0 0% 100%',
+                      mutedColor: '210 40% 96.1%',
+                      borderColor: '214.3 31.8% 91.4%',
+                    }))}
+                    className="gap-1.5 text-xs"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    Reset to Defaults
+                  </Button>
+                </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div>
-                    <label className="text-sm font-medium mb-1.5 block">Primary Color</label>
-                    <div className="flex gap-2 items-center">
-                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.primaryColor})` }} />
-                      <Input value={brand.primaryColor} onChange={(e) => setBrand((b) => ({ ...b, primaryColor: e.target.value }))} placeholder="222.2 47.4% 11.2%" />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Headers, navigation, buttons</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-1.5 block">Accent Color</label>
-                    <div className="flex gap-2 items-center">
-                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.secondaryColor})` }} />
-                      <Input value={brand.secondaryColor} onChange={(e) => setBrand((b) => ({ ...b, secondaryColor: e.target.value }))} placeholder="39 48% 56%" />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">CTA buttons, highlights, gold accents</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-1.5 block">Background Color</label>
-                    <div className="flex gap-2 items-center">
-                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.backgroundColor})` }} />
-                      <Input value={brand.backgroundColor} onChange={(e) => setBrand((b) => ({ ...b, backgroundColor: e.target.value }))} placeholder="210 40% 98%" />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Page background</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-1.5 block">Text Color</label>
-                    <div className="flex gap-2 items-center">
-                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.foregroundColor})` }} />
-                      <Input value={brand.foregroundColor} onChange={(e) => setBrand((b) => ({ ...b, foregroundColor: e.target.value }))} placeholder="222.2 47.4% 11.2%" />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Body text, headings</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-1.5 block">Card / Surface Color</label>
-                    <div className="flex gap-2 items-center">
-                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.cardColor})` }} />
-                      <Input value={brand.cardColor} onChange={(e) => setBrand((b) => ({ ...b, cardColor: e.target.value }))} placeholder="0 0% 100%" />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Cards, dialogs, popovers</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-1.5 block">Muted Color</label>
-                    <div className="flex gap-2 items-center">
-                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.mutedColor})` }} />
-                      <Input value={brand.mutedColor} onChange={(e) => setBrand((b) => ({ ...b, mutedColor: e.target.value }))} placeholder="210 40% 96.1%" />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Secondary backgrounds, disabled states</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-1.5 block">Border Color</label>
-                    <div className="flex gap-2 items-center">
-                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.borderColor})` }} />
-                      <Input value={brand.borderColor} onChange={(e) => setBrand((b) => ({ ...b, borderColor: e.target.value }))} placeholder="214.3 31.8% 91.4%" />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Borders, dividers, inputs</p>
-                  </div>
+                  <ColorPicker label="Primary Color" description="Headers, navigation, buttons" value={brand.primaryColor} onChange={(v) => setBrand((b) => ({ ...b, primaryColor: v }))} />
+                  <ColorPicker label="Accent Color" description="CTA buttons, highlights, gold accents" value={brand.secondaryColor} onChange={(v) => setBrand((b) => ({ ...b, secondaryColor: v }))} />
+                  <ColorPicker label="Background Color" description="Page background" value={brand.backgroundColor} onChange={(v) => setBrand((b) => ({ ...b, backgroundColor: v }))} />
+                  <ColorPicker label="Text Color" description="Body text, headings" value={brand.foregroundColor} onChange={(v) => setBrand((b) => ({ ...b, foregroundColor: v }))} />
+                  <ColorPicker label="Card / Surface Color" description="Cards, dialogs, popovers" value={brand.cardColor} onChange={(v) => setBrand((b) => ({ ...b, cardColor: v }))} />
+                  <ColorPicker label="Muted Color" description="Secondary backgrounds, disabled states" value={brand.mutedColor} onChange={(v) => setBrand((b) => ({ ...b, mutedColor: v }))} />
+                  <ColorPicker label="Border Color" description="Borders, dividers, inputs" value={brand.borderColor} onChange={(v) => setBrand((b) => ({ ...b, borderColor: v }))} />
                 </div>
               </div>
 
-              <div><label className="text-sm font-medium mb-1.5 block">Footer Text</label><Input value={brand.footerText} onChange={(e) => setBrand((b) => ({ ...b, footerText: e.target.value }))} /></div>
               <Button variant="gold" onClick={handleSaveBrand}>Save Brand Settings</Button>
             </div>
           </TabsContent>

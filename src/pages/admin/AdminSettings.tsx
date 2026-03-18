@@ -213,6 +213,7 @@ const AdminSettings = () => {
                 </div>
               </div>
 
+              <div><label className="text-sm font-medium mb-1.5 block">Footer Text</label><Input value={brand.footerText} onChange={(e) => setBrand((b) => ({ ...b, footerText: e.target.value }))} /></div>
               <Button variant="gold" onClick={handleSaveBrand}>Save Brand Settings</Button>
             </div>
           </TabsContent>

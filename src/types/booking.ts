@@ -88,6 +88,11 @@ export interface BrandSettings {
   businessAddress: string;
   primaryColor: string;
   secondaryColor: string;
+  backgroundColor: string;
+  foregroundColor: string;
+  cardColor: string;
+  mutedColor: string;
+  borderColor: string;
   footerText: string;
   businessLogoUrl?: string | null;
 }

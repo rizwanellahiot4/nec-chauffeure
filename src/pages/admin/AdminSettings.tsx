@@ -23,6 +23,11 @@ const AdminSettings = () => {
     businessAddress: 'New York, NY',
     primaryColor: '222.2 47.4% 11.2%',
     secondaryColor: '39 48% 56%',
+    backgroundColor: '210 40% 98%',
+    foregroundColor: '222.2 47.4% 11.2%',
+    cardColor: '0 0% 100%',
+    mutedColor: '210 40% 96.1%',
+    borderColor: '214.3 31.8% 91.4%',
     footerText: '© 2026 EliteDrive. All rights reserved.',
     businessLogoUrl: null,
   });
@@ -85,6 +90,11 @@ const AdminSettings = () => {
       business_address: brand.businessAddress,
       primary_brand_color: brand.primaryColor,
       secondary_brand_color: brand.secondaryColor,
+      background_color: brand.backgroundColor,
+      foreground_color: brand.foregroundColor,
+      card_color: brand.cardColor,
+      muted_color: brand.mutedColor,
+      border_color: brand.borderColor,
       footer_copyright_text: brand.footerText,
       business_logo_url: logoUrl,
     }).eq('id', '11111111-1111-1111-1111-111111111111');
@@ -158,17 +168,78 @@ const AdminSettings = () => {
           </TabsList>
 
           <TabsContent value="brand">
-            <div className="bg-card rounded-xl border border-border shadow-luxury p-6 space-y-4">
+            <div className="bg-card rounded-xl border border-border shadow-luxury p-6 space-y-6">
               <h3 className="font-display font-semibold">Brand Settings</h3>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div><label className="text-sm font-medium mb-1.5 block">Business Name</label><Input value={brand.businessName} onChange={(e) => setBrand((b) => ({ ...b, businessName: e.target.value }))} /></div>
                 <div><label className="text-sm font-medium mb-1.5 block">Email</label><Input value={brand.businessEmail} onChange={(e) => setBrand((b) => ({ ...b, businessEmail: e.target.value }))} /></div>
                 <div><label className="text-sm font-medium mb-1.5 block">Phone</label><Input value={brand.businessPhone} onChange={(e) => setBrand((b) => ({ ...b, businessPhone: e.target.value }))} /></div>
                 <div><label className="text-sm font-medium mb-1.5 block">Address</label><Input value={brand.businessAddress} onChange={(e) => setBrand((b) => ({ ...b, businessAddress: e.target.value }))} /></div>
-                <div><label className="text-sm font-medium mb-1.5 block">Primary Color</label><Input value={brand.primaryColor} onChange={(e) => setBrand((b) => ({ ...b, primaryColor: e.target.value }))} /></div>
-                <div><label className="text-sm font-medium mb-1.5 block">Secondary Color</label><Input value={brand.secondaryColor} onChange={(e) => setBrand((b) => ({ ...b, secondaryColor: e.target.value }))} /></div>
                 <div className="sm:col-span-2"><label className="text-sm font-medium mb-1.5 block">Brand Logo</label><Input type="file" accept="image/*" onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)} />{brand.businessLogoUrl ? <p className="mt-2 text-xs text-muted-foreground break-all">Current logo: {brand.businessLogoUrl}</p> : null}</div>
               </div>
+
+              <div className="border-t border-border pt-6">
+                <h4 className="font-display font-semibold text-sm mb-4">Theme Colors <span className="text-muted-foreground font-normal">(HSL values, e.g. 222.2 47.4% 11.2%)</span></h4>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Primary Color</label>
+                    <div className="flex gap-2 items-center">
+                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.primaryColor})` }} />
+                      <Input value={brand.primaryColor} onChange={(e) => setBrand((b) => ({ ...b, primaryColor: e.target.value }))} placeholder="222.2 47.4% 11.2%" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Headers, navigation, buttons</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Accent Color</label>
+                    <div className="flex gap-2 items-center">
+                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.secondaryColor})` }} />
+                      <Input value={brand.secondaryColor} onChange={(e) => setBrand((b) => ({ ...b, secondaryColor: e.target.value }))} placeholder="39 48% 56%" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">CTA buttons, highlights, gold accents</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Background Color</label>
+                    <div className="flex gap-2 items-center">
+                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.backgroundColor})` }} />
+                      <Input value={brand.backgroundColor} onChange={(e) => setBrand((b) => ({ ...b, backgroundColor: e.target.value }))} placeholder="210 40% 98%" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Page background</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Text Color</label>
+                    <div className="flex gap-2 items-center">
+                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.foregroundColor})` }} />
+                      <Input value={brand.foregroundColor} onChange={(e) => setBrand((b) => ({ ...b, foregroundColor: e.target.value }))} placeholder="222.2 47.4% 11.2%" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Body text, headings</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Card / Surface Color</label>
+                    <div className="flex gap-2 items-center">
+                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.cardColor})` }} />
+                      <Input value={brand.cardColor} onChange={(e) => setBrand((b) => ({ ...b, cardColor: e.target.value }))} placeholder="0 0% 100%" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Cards, dialogs, popovers</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Muted Color</label>
+                    <div className="flex gap-2 items-center">
+                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.mutedColor})` }} />
+                      <Input value={brand.mutedColor} onChange={(e) => setBrand((b) => ({ ...b, mutedColor: e.target.value }))} placeholder="210 40% 96.1%" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Secondary backgrounds, disabled states</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Border Color</label>
+                    <div className="flex gap-2 items-center">
+                      <div className="w-8 h-8 rounded-md border border-border shrink-0" style={{ backgroundColor: `hsl(${brand.borderColor})` }} />
+                      <Input value={brand.borderColor} onChange={(e) => setBrand((b) => ({ ...b, borderColor: e.target.value }))} placeholder="214.3 31.8% 91.4%" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Borders, dividers, inputs</p>
+                  </div>
+                </div>
+              </div>
+
               <div><label className="text-sm font-medium mb-1.5 block">Footer Text</label><Input value={brand.footerText} onChange={(e) => setBrand((b) => ({ ...b, footerText: e.target.value }))} /></div>
               <Button variant="gold" onClick={handleSaveBrand}>Save Brand Settings</Button>
             </div>

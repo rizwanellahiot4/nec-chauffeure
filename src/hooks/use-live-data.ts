@@ -11,6 +11,11 @@ const defaultBrandSettings: BrandSettings = {
   businessAddress: 'New York, NY',
   primaryColor: '222.2 47.4% 11.2%',
   secondaryColor: '39 48% 56%',
+  backgroundColor: '210 40% 98%',
+  foregroundColor: '222.2 47.4% 11.2%',
+  cardColor: '0 0% 100%',
+  mutedColor: '210 40% 96.1%',
+  borderColor: '214.3 31.8% 91.4%',
   footerText: '© EliteDrive. All rights reserved.',
   businessLogoUrl: null,
 };
@@ -66,6 +71,11 @@ const mapBrandSettingsRow = (row?: Record<string, any> | null): BrandSettings =>
     businessAddress: row.business_address ?? defaultBrandSettings.businessAddress,
     primaryColor: row.primary_brand_color ?? defaultBrandSettings.primaryColor,
     secondaryColor: row.secondary_brand_color ?? defaultBrandSettings.secondaryColor,
+    backgroundColor: row.background_color ?? defaultBrandSettings.backgroundColor,
+    foregroundColor: row.foreground_color ?? defaultBrandSettings.foregroundColor,
+    cardColor: row.card_color ?? defaultBrandSettings.cardColor,
+    mutedColor: row.muted_color ?? defaultBrandSettings.mutedColor,
+    borderColor: row.border_color ?? defaultBrandSettings.borderColor,
     footerText: row.footer_copyright_text ?? defaultBrandSettings.footerText,
     businessLogoUrl: row.business_logo_url ?? null,
   };

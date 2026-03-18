@@ -129,40 +129,55 @@ export type Database = {
       }
       brand_settings: {
         Row: {
+          background_color: string
+          border_color: string
           business_address: string
           business_email: string
           business_logo_url: string | null
           business_name: string
           business_phone: string
+          card_color: string
           created_at: string
           footer_copyright_text: string
+          foreground_color: string
           id: string
+          muted_color: string
           primary_brand_color: string
           secondary_brand_color: string
           updated_at: string
         }
         Insert: {
+          background_color?: string
+          border_color?: string
           business_address: string
           business_email: string
           business_logo_url?: string | null
           business_name: string
           business_phone: string
+          card_color?: string
           created_at?: string
           footer_copyright_text: string
+          foreground_color?: string
           id?: string
+          muted_color?: string
           primary_brand_color: string
           secondary_brand_color: string
           updated_at?: string
         }
         Update: {
+          background_color?: string
+          border_color?: string
           business_address?: string
           business_email?: string
           business_logo_url?: string | null
           business_name?: string
           business_phone?: string
+          card_color?: string
           created_at?: string
           footer_copyright_text?: string
+          foreground_color?: string
           id?: string
+          muted_color?: string
           primary_brand_color?: string
           secondary_brand_color?: string
           updated_at?: string

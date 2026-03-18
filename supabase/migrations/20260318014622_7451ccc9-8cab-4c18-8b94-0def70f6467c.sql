@@ -1,0 +1,7 @@
+
+ALTER TABLE public.brand_settings
+  ADD COLUMN IF NOT EXISTS background_color text NOT NULL DEFAULT '210 40% 98%',
+  ADD COLUMN IF NOT EXISTS foreground_color text NOT NULL DEFAULT '222.2 47.4% 11.2%',
+  ADD COLUMN IF NOT EXISTS card_color text NOT NULL DEFAULT '0 0% 100%',
+  ADD COLUMN IF NOT EXISTS muted_color text NOT NULL DEFAULT '210 40% 96.1%',
+  ADD COLUMN IF NOT EXISTS border_color text NOT NULL DEFAULT '214.3 31.8% 91.4%';

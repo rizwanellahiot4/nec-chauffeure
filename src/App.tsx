@@ -4,6 +4,7 @@ import { Toaster as Sonner } from '@/components/ui/sonner';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AdminAuthProvider, useAdminAuth } from '@/contexts/AdminAuthContext';
+import BrandThemeProvider from '@/components/BrandThemeProvider';
 import Index from './pages/Index';
 import BookingConfirmation from './pages/BookingConfirmation';
 import AdminLogin from './pages/admin/AdminLogin';
@@ -36,22 +37,24 @@ const AdminRedirect = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AdminAuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/booking/confirmation" element={<BookingConfirmation />} />
-            <Route path="/admin/login" element={<AdminRedirect />} />
-            <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/admin/bookings" element={<ProtectedRoute><AdminBookings /></ProtectedRoute>} />
-            <Route path="/admin/vehicles" element={<ProtectedRoute><AdminVehicles /></ProtectedRoute>} />
-            <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AdminAuthProvider>
-      </BrowserRouter>
+      <BrandThemeProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AdminAuthProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/booking/confirmation" element={<BookingConfirmation />} />
+              <Route path="/admin/login" element={<AdminRedirect />} />
+              <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/admin/bookings" element={<ProtectedRoute><AdminBookings /></ProtectedRoute>} />
+              <Route path="/admin/vehicles" element={<ProtectedRoute><AdminVehicles /></ProtectedRoute>} />
+              <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AdminAuthProvider>
+        </BrowserRouter>
+      </BrandThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

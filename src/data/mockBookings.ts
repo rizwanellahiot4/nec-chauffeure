@@ -21,7 +21,7 @@ export const mockBookings: Booking[] = [
       durationHours: 0,
       notes: 'Flight AA 205',
     },
-    vehicle: { id: '1', name: 'Executive Sedan', image: '', passengers: 3, luggage: 2, priceMultiplier: 1.0, description: 'Mercedes-Benz E-Class' },
+    vehicle: { id: '1', name: 'Executive Sedan', image: '', passengers: 3, luggage: 2, priceMultiplier: 1.0, description: 'Mercedes-Benz E-Class', pricePerMile: 3.5, minimumFare: 65, hourlyRate: 65, privateTourPrice: 120 },
     route: { distance: 31.2, duration: 48, geometry: [] },
     totalPrice: 125.0,
     status: 'confirmed',

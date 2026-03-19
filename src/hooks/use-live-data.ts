@@ -268,6 +268,10 @@ export const useAdminVehicles = () => {
         luggage: vehicle.luggage,
         priceMultiplier: Number(vehicle.price_multiplier),
         description: vehicle.description,
+        pricePerMile: Number((vehicle as any).price_per_mile ?? 3.5),
+        minimumFare: Number((vehicle as any).minimum_fare ?? 65),
+        hourlyRate: Number((vehicle as any).hourly_rate ?? 65),
+        privateTourPrice: Number((vehicle as any).private_tour_price ?? 120),
       }));
     },
   });

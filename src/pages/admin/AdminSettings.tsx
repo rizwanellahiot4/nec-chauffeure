@@ -49,10 +49,6 @@ const AdminSettings = () => {
   }, [liveBrand]);
 
   useEffect(() => {
-    if (livePricing) setPricing(livePricing);
-  }, [livePricing]);
-
-  useEffect(() => {
     if (liveMap) setMapSettings(liveMap);
   }, [liveMap]);
 

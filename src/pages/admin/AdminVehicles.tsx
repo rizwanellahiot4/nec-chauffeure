@@ -4,14 +4,25 @@ import { Vehicle } from '@/types/booking';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, Users, Briefcase, Upload } from 'lucide-react';
+import { Plus, Pencil, Trash2, Users, Briefcase, Upload, DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminVehicles } from '@/hooks/use-live-data';
 import { uploadAdminAsset } from '@/lib/admin-assets';
 
-const emptyForm = { name: '', description: '', passengers: 3, luggage: 2, priceMultiplier: 1.0, image: '' };
+const emptyForm = {
+  name: '',
+  description: '',
+  passengers: 3,
+  luggage: 2,
+  priceMultiplier: 1.0,
+  image: '',
+  pricePerMile: 3.5,
+  minimumFare: 65,
+  hourlyRate: 65,
+  privateTourPrice: 120,
+};
 
 const AdminVehicles = () => {
   const { data: vehicles = [] } = useAdminVehicles();
@@ -38,6 +49,10 @@ const AdminVehicles = () => {
       luggage: v.luggage,
       priceMultiplier: v.priceMultiplier,
       image: v.image,
+      pricePerMile: v.pricePerMile,
+      minimumFare: v.minimumFare,
+      hourlyRate: v.hourlyRate,
+      privateTourPrice: v.privateTourPrice,
     });
     setDialogOpen(true);
   };
@@ -65,6 +80,10 @@ const AdminVehicles = () => {
       price_multiplier: form.priceMultiplier,
       image: imageUrl,
       is_active: true,
+      price_per_mile: form.pricePerMile,
+      minimum_fare: form.minimumFare,
+      hourly_rate: form.hourlyRate,
+      private_tour_price: form.privateTourPrice,
     };
 
     const query = editVehicle
@@ -125,7 +144,12 @@ const AdminVehicles = () => {
                 <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {vehicle.passengers} pax</span>
                   <span className="flex items-center gap-1"><Briefcase className="h-3.5 w-3.5" /> {vehicle.luggage} bags</span>
-                  <span className="text-accent font-medium">×{vehicle.priceMultiplier}</span>
+                </div>
+                <div className="flex flex-wrap items-center gap-3 mt-2 text-xs">
+                  <span className="flex items-center gap-1 text-accent"><DollarSign className="h-3 w-3" />{vehicle.pricePerMile}/mi</span>
+                  <span className="text-muted-foreground">Min ${vehicle.minimumFare}</span>
+                  <span className="text-muted-foreground">${vehicle.hourlyRate}/hr</span>
+                  <span className="text-muted-foreground">Tour ${vehicle.privateTourPrice}</span>
                 </div>
                 <div className="flex gap-2 mt-4">
                   <Button variant="outline" size="sm" className="flex-1" onClick={() => openEdit(vehicle)}>
@@ -141,7 +165,7 @@ const AdminVehicles = () => {
         </div>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="font-display">{editVehicle ? 'Edit Vehicle' : 'Add Vehicle'}</DialogTitle>
             </DialogHeader>
@@ -160,7 +184,7 @@ const AdminVehicles = () => {
                 {form.image ? <p className="text-xs text-muted-foreground break-all">Current: {form.image}</p> : null}
                 <p className="text-xs text-muted-foreground flex items-center gap-1"><Upload className="h-3 w-3" /> Uploading a new file will replace the current image URL.</p>
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Passengers</label>
                   <Input type="number" value={form.passengers} onChange={(e) => setForm((f) => ({ ...f, passengers: parseInt(e.target.value) || 0 }))} />
@@ -169,11 +193,32 @@ const AdminVehicles = () => {
                   <label className="text-sm font-medium mb-1.5 block">Luggage</label>
                   <Input type="number" value={form.luggage} onChange={(e) => setForm((f) => ({ ...f, luggage: parseInt(e.target.value) || 0 }))} />
                 </div>
-                <div>
-                  <label className="text-sm font-medium mb-1.5 block">Price ×</label>
-                  <Input type="number" step="0.1" value={form.priceMultiplier} onChange={(e) => setForm((f) => ({ ...f, priceMultiplier: parseFloat(e.target.value) || 1 }))} />
+              </div>
+
+              <div className="border-t border-border pt-4">
+                <h4 className="font-display font-semibold text-sm mb-3">Vehicle Pricing</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Price per Mile ($)</label>
+                    <Input type="number" step="0.1" value={form.pricePerMile} onChange={(e) => setForm((f) => ({ ...f, pricePerMile: parseFloat(e.target.value) || 0 }))} />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Minimum Fare ($)</label>
+                    <Input type="number" step="1" value={form.minimumFare} onChange={(e) => setForm((f) => ({ ...f, minimumFare: parseFloat(e.target.value) || 0 }))} />
+                    <p className="text-xs text-muted-foreground mt-1">Applied when ride is under 10 miles</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Hourly Rate ($)</label>
+                    <Input type="number" step="1" value={form.hourlyRate} onChange={(e) => setForm((f) => ({ ...f, hourlyRate: parseFloat(e.target.value) || 0 }))} />
+                    <p className="text-xs text-muted-foreground mt-1">For Chauffeur by the Hour</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Private Tour Price ($)</label>
+                    <Input type="number" step="1" value={form.privateTourPrice} onChange={(e) => setForm((f) => ({ ...f, privateTourPrice: parseFloat(e.target.value) || 0 }))} />
+                  </div>
                 </div>
               </div>
+
               <Button variant="gold" className="w-full" onClick={handleSave} disabled={saving}>
                 {saving ? 'Saving...' : editVehicle ? 'Save Changes' : 'Add Vehicle'}
               </Button>

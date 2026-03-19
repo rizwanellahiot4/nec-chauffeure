@@ -12,7 +12,6 @@ import type { ChildSeatType, ServiceType } from '@/types/booking';
 
 const BookingForm = () => {
   const { formData, setFormData, setStep, routeInfo } = useBooking();
-  const { data: pricing } = usePricingSettings();
 
   const handlePickup = useCallback((address: string, lat: number, lng: number) => {
     setFormData((prev) => ({ ...prev, pickupAddress: address, pickupLat: lat, pickupLng: lng }));

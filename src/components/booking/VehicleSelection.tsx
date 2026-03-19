@@ -27,7 +27,7 @@ const VehicleSelection = () => {
 
       {routeInfo && (
         <div className="flex items-center gap-4 bg-secondary rounded-lg p-3 text-sm">
-          <span className="font-medium">{routeInfo.distance.toFixed(1)} {pricing?.distanceUnit ?? 'km'}</span>
+          <span className="font-medium">{routeInfo.distance.toFixed(1)} mi</span>
           <span className="text-muted-foreground">•</span>
           <span className="font-medium">~{Math.round(routeInfo.duration)} min</span>
         </div>

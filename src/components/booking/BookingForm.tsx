@@ -8,12 +8,10 @@ import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import { useCallback } from 'react';
 import NumberStepper from '@/components/ui/number-stepper';
 import { CHILD_SEAT_TYPES, SERVICE_TYPES } from '@/lib/booking-options';
-import { usePricingSettings } from '@/hooks/use-live-data';
 import type { ChildSeatType, ServiceType } from '@/types/booking';
 
 const BookingForm = () => {
   const { formData, setFormData, setStep, routeInfo } = useBooking();
-  const { data: pricing } = usePricingSettings();
 
   const handlePickup = useCallback((address: string, lat: number, lng: number) => {
     setFormData((prev) => ({ ...prev, pickupAddress: address, pickupLat: lat, pickupLng: lng }));
@@ -23,7 +21,7 @@ const BookingForm = () => {
     setFormData((prev) => ({ ...prev, dropoffAddress: address, dropoffLat: lat, dropoffLng: lng }));
   }, [setFormData]);
 
-  const isHourlyService = formData.serviceType === 'chauffeur-hourly' || formData.serviceType === 'private-tour';
+  const isHourlyService = formData.serviceType === 'chauffeur-hourly';
   const canProceed = formData.pickupAddress && formData.dropoffAddress && formData.date && formData.time && routeInfo;
 
   return (
@@ -110,7 +108,7 @@ const BookingForm = () => {
           min={1}
           max={24}
           onChange={(value) => setFormData((prev) => ({ ...prev, durationHours: value }))}
-          helperText={`Charged using ${pricing?.distanceUnit === 'mi' ? 'mile' : 'kilometer'} pricing and hourly rate.`}
+          helperText="Only hourly rate will apply for this service."
         />
       )}
 
@@ -148,7 +146,7 @@ const BookingForm = () => {
 
       {routeInfo && (
         <div className="flex items-center gap-4 bg-secondary rounded-lg p-3 text-sm">
-          <span className="font-medium">{routeInfo.distance.toFixed(1)} {pricing?.distanceUnit ?? 'km'}</span>
+          <span className="font-medium">{routeInfo.distance.toFixed(1)} mi</span>
           <span className="text-muted-foreground">•</span>
           <span className="font-medium">~{Math.round(routeInfo.duration)} min</span>
         </div>

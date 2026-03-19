@@ -332,37 +332,49 @@ export type Database = {
         Row: {
           created_at: string
           description: string
+          hourly_rate: number
           id: string
           image: string
           is_active: boolean
           luggage: number
+          minimum_fare: number
           name: string
           passengers: number
           price_multiplier: number
+          price_per_mile: number
+          private_tour_price: number
           updated_at: string
         }
         Insert: {
           created_at?: string
           description?: string
+          hourly_rate?: number
           id?: string
           image: string
           is_active?: boolean
           luggage: number
+          minimum_fare?: number
           name: string
           passengers: number
           price_multiplier?: number
+          price_per_mile?: number
+          private_tour_price?: number
           updated_at?: string
         }
         Update: {
           created_at?: string
           description?: string
+          hourly_rate?: number
           id?: string
           image?: string
           is_active?: boolean
           luggage?: number
+          minimum_fare?: number
           name?: string
           passengers?: number
           price_multiplier?: number
+          price_per_mile?: number
+          private_tour_price?: number
           updated_at?: string
         }
         Relationships: []

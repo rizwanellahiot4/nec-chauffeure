@@ -7,13 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { formatChildSeatType, formatServiceType } from '@/lib/booking-options';
 import { toast } from 'sonner';
-import { usePricingSettings } from '@/hooks/use-live-data';
 
 const createBookingReference = () => `BK-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
 
 const BookingSummary = () => {
   const { formData, selectedVehicle, customerDetails, routeInfo, totalPrice, setStep } = useBooking();
-  const { data: pricing } = usePricingSettings();
   const [isProcessing, setIsProcessing] = useState(false);
   const [cardName, setCardName] = useState('');
   const [cardNumber, setCardNumber] = useState('4242 4242 4242 4242');
@@ -118,7 +116,7 @@ const BookingSummary = () => {
           <div className="flex gap-4 text-sm"><span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5 text-muted-foreground" /> {formData.date}</span><span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-muted-foreground" /> {formData.time}</span></div>
           <div className="flex flex-wrap gap-4 text-sm"><span className="flex items-center gap-1"><Users className="h-3.5 w-3.5 text-muted-foreground" /> {formData.passengers} pax</span><span className="flex items-center gap-1"><Briefcase className="h-3.5 w-3.5 text-muted-foreground" /> {formData.luggage} bags</span>{formData.durationHours > 0 ? <span>{formData.durationHours} hrs</span> : null}</div>
           <div className="text-sm text-muted-foreground">{formatServiceType(formData.serviceType)}{formData.childSeatType !== 'none' ? ` • ${formatChildSeatType(formData.childSeatType)}` : ''}</div>
-          {routeInfo && <div className="text-sm text-muted-foreground">{routeInfo.distance.toFixed(1)} {pricing?.distanceUnit ?? 'km'} • ~{Math.round(routeInfo.duration)} min</div>}
+          {routeInfo && <div className="text-sm text-muted-foreground">{routeInfo.distance.toFixed(1)} mi • ~{Math.round(routeInfo.duration)} min</div>}
         </div>
 
         {selectedVehicle && (

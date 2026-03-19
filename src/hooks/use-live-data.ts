@@ -148,6 +148,10 @@ export const mapBookingRowToBooking = (row: Record<string, any>): Booking => {
       luggage: Number(row.luggage),
       priceMultiplier: 1,
       description: row.vehicle_name_snapshot,
+      pricePerMile: 3.5,
+      minimumFare: 65,
+      hourlyRate: 65,
+      privateTourPrice: 120,
     },
     route: {
       distance: Number(row.route_distance_km),
@@ -232,6 +236,10 @@ export const useVehicles = () => {
           luggage: vehicle.luggage,
           priceMultiplier: Number(vehicle.price_multiplier),
           description: vehicle.description,
+          pricePerMile: Number((vehicle as any).price_per_mile ?? 3.5),
+          minimumFare: Number((vehicle as any).minimum_fare ?? 65),
+          hourlyRate: Number((vehicle as any).hourly_rate ?? 65),
+          privateTourPrice: Number((vehicle as any).private_tour_price ?? 120),
         }));
     },
   });
@@ -260,6 +268,10 @@ export const useAdminVehicles = () => {
         luggage: vehicle.luggage,
         priceMultiplier: Number(vehicle.price_multiplier),
         description: vehicle.description,
+        pricePerMile: Number((vehicle as any).price_per_mile ?? 3.5),
+        minimumFare: Number((vehicle as any).minimum_fare ?? 65),
+        hourlyRate: Number((vehicle as any).hourly_rate ?? 65),
+        privateTourPrice: Number((vehicle as any).private_tour_price ?? 120),
       }));
     },
   });

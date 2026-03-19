@@ -1,5 +1,5 @@
 import { useBooking } from '@/contexts/BookingContext';
-import { useVehicles, usePricingSettings } from '@/hooks/use-live-data';
+import { useVehicles } from '@/hooks/use-live-data';
 import { Button } from '@/components/ui/button';
 import { Users, Briefcase, ArrowLeft, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -8,7 +8,6 @@ import { Vehicle } from '@/types/booking';
 const VehicleSelection = () => {
   const { routeInfo, formData, selectedVehicle, setSelectedVehicle, calculatePrice, setTotalPrice, setStep } = useBooking();
   const { data: vehicles = [] } = useVehicles();
-  const { data: pricing } = usePricingSettings();
 
   const handleSelect = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
@@ -27,7 +26,7 @@ const VehicleSelection = () => {
 
       {routeInfo && (
         <div className="flex items-center gap-4 bg-secondary rounded-lg p-3 text-sm">
-          <span className="font-medium">{routeInfo.distance.toFixed(1)} {pricing?.distanceUnit ?? 'km'}</span>
+          <span className="font-medium">{routeInfo.distance.toFixed(1)} mi</span>
           <span className="text-muted-foreground">•</span>
           <span className="font-medium">~{Math.round(routeInfo.duration)} min</span>
         </div>

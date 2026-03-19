@@ -32,21 +32,21 @@ const defaultFormData: BookingFormData = {
   luggage: 0,
   childSeat: false,
   childSeatType: 'none',
-  serviceType: 'one-way-transfer',
+  serviceType: 'general',
   durationHours: 2,
   notes: '',
 };
 
 const defaultPricing: PricingConfig = {
-  baseFare: 15,
-  pricePerKm: 2.5,
+  baseFare: 0,
+  pricePerKm: 0,
   hourlyRate: 65,
-  airportSurcharge: 20,
+  airportSurcharge: 0,
   childSeatPrice: 10,
-  distanceUnit: 'km',
-  hourlyDistanceUnit: 'kmh',
-  fromAirportSurcharge: 20,
-  toAirportSurcharge: 20,
+  distanceUnit: 'mi',
+  hourlyDistanceUnit: 'mph',
+  fromAirportSurcharge: 0,
+  toAirportSurcharge: 0,
   privateTourBaseFare: 120,
   hourlyChauffeurBaseFare: 65,
   rearFacingSeatPrice: 15,
@@ -74,38 +74,40 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const calculatePrice = useMemo(
     () => (vehicle: Vehicle, route: RouteInfo, fd: BookingFormData) => {
-      const distanceCharge = route.distance * pricing.pricePerKm;
-      let price = pricing.baseFare + distanceCharge;
+      let price = 0;
 
+      // Chauffeur by the Hour: only vehicle hourly rate × hours
       if (fd.serviceType === 'chauffeur-hourly') {
-        price = (pricing.hourlyChauffeurBaseFare ?? pricing.hourlyRate) + fd.durationHours * pricing.hourlyRate;
+        price = vehicle.hourlyRate * fd.durationHours;
+        return Math.round(price * 100) / 100;
       }
 
+      // Private Tour: vehicle's private tour price
       if (fd.serviceType === 'private-tour') {
-        price = (pricing.privateTourBaseFare ?? pricing.baseFare) + fd.durationHours * pricing.hourlyRate;
+        price = vehicle.privateTourPrice;
+        return Math.round(price * 100) / 100;
       }
 
-      if (fd.serviceType === 'from-airport') {
-        price += pricing.fromAirportSurcharge ?? pricing.airportSurcharge;
+      // All other service types (general, from-airport, to-airport, one-way-transfer):
+      // If distance < 10 miles → minimum fare, else price per mile
+      const distanceMiles = route.distance;
+      if (distanceMiles < 10) {
+        price = vehicle.minimumFare;
+      } else {
+        price = distanceMiles * vehicle.pricePerMile;
       }
 
-      if (fd.serviceType === 'to-airport') {
-        price += pricing.toAirportSurcharge ?? pricing.airportSurcharge;
-      }
-
+      // Child seat add-ons (from global pricing)
       if (fd.childSeatType === 'rear-facing-seat') {
         price += pricing.rearFacingSeatPrice ?? pricing.childSeatPrice;
       }
-
       if (fd.childSeatType === 'forward-facing-seat') {
         price += pricing.forwardFacingSeatPrice ?? pricing.childSeatPrice;
       }
-
       if (fd.childSeatType === 'booster-seat') {
         price += pricing.boosterSeatPrice ?? pricing.childSeatPrice;
       }
 
-      price *= vehicle.priceMultiplier;
       return Math.round(price * 100) / 100;
     },
     [pricing],

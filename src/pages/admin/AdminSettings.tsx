@@ -32,22 +32,6 @@ const AdminSettings = () => {
     businessLogoUrl: null,
   });
 
-  const [pricing, setPricing] = useState<PricingConfig>({
-    baseFare: 15,
-    pricePerKm: 2.5,
-    hourlyRate: 65,
-    airportSurcharge: 20,
-    childSeatPrice: 10,
-    distanceUnit: 'km',
-    fromAirportSurcharge: 20,
-    toAirportSurcharge: 20,
-    privateTourBaseFare: 120,
-    hourlyChauffeurBaseFare: 65,
-    rearFacingSeatPrice: 15,
-    forwardFacingSeatPrice: 12,
-    boosterSeatPrice: 10,
-  });
-
   const [mapSettings, setMapSettings] = useState<MapSettings>({
     centerLat: 40.7128,
     centerLng: -74.006,

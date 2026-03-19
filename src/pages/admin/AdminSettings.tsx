@@ -13,7 +13,7 @@ import { uploadAdminAsset } from '@/lib/admin-assets';
 
 const AdminSettings = () => {
   const { data: liveBrand } = useBrandSettings();
-  const { data: livePricing } = usePricingSettings();
+  const { data: liveMap } = useMapSettings();
   const { data: liveMap } = useMapSettings();
 
   const [brand, setBrand] = useState<BrandSettings>({

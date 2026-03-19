@@ -8,7 +8,6 @@ import { Vehicle } from '@/types/booking';
 const VehicleSelection = () => {
   const { routeInfo, formData, selectedVehicle, setSelectedVehicle, calculatePrice, setTotalPrice, setStep } = useBooking();
   const { data: vehicles = [] } = useVehicles();
-  const { data: pricing } = usePricingSettings();
 
   const handleSelect = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);

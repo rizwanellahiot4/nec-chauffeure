@@ -12,7 +12,6 @@ const createBookingReference = () => `BK-${Math.random().toString(36).slice(2, 1
 
 const BookingSummary = () => {
   const { formData, selectedVehicle, customerDetails, routeInfo, totalPrice, setStep } = useBooking();
-  const { data: pricing } = usePricingSettings();
   const [isProcessing, setIsProcessing] = useState(false);
   const [cardName, setCardName] = useState('');
   const [cardNumber, setCardNumber] = useState('4242 4242 4242 4242');

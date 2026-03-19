@@ -108,7 +108,7 @@ const BookingForm = () => {
           min={1}
           max={24}
           onChange={(value) => setFormData((prev) => ({ ...prev, durationHours: value }))}
-          helperText={`Charged using ${pricing?.distanceUnit === 'mi' ? 'mile' : 'kilometer'} pricing and hourly rate.`}
+          helperText="Only hourly rate will apply for this service."
         />
       )}
 

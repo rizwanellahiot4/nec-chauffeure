@@ -71,6 +71,30 @@ const BookingSummary = () => {
       return;
     }
 
+    // Send branded confirmation email via Resend
+    try {
+      await supabase.functions.invoke('send-booking-email', {
+        body: {
+          bookingReference,
+          customerName: customerDetails.fullName,
+          customerEmail: customerDetails.email,
+          pickupAddress: formData.pickupAddress,
+          dropoffAddress: formData.dropoffAddress,
+          pickupAt: pickupAt.toISOString(),
+          vehicleName: selectedVehicle.name,
+          totalPrice,
+          passengers: formData.passengers,
+          luggage: formData.luggage,
+          serviceType: formData.serviceType,
+          durationHours: formData.durationHours,
+          distanceKm: routeInfo.distance,
+          durationMinutes: routeInfo.duration,
+        },
+      });
+    } catch (emailErr) {
+      console.error('Email send failed:', emailErr);
+    }
+
     navigate(`/booking/confirmation?id=${bookingReference}&status=confirmed`);
   };
 

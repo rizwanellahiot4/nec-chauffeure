@@ -282,27 +282,17 @@ Deno.serve(async (req) => {
 </html>`;
 
     // Send to admin (brand email)
-    const adminRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: `${brand.name} <onboarding@resend.dev>`,
-        to: [brand.email],
-        subject: `🔔 New Booking ${bookingReference} — ${customerName} | $${Number(totalPrice).toFixed(2)}`,
-        html: adminHtml,
-      }),
-    });
+    const adminResult = await sendEmail(
+      [brand.email],
+      `🔔 New Booking ${bookingReference} — ${customerName} | $${Number(totalPrice).toFixed(2)}`,
+      adminHtml,
+    );
 
-    const adminData = await adminRes.json();
-    if (!adminRes.ok) {
-      console.error("Admin email error:", adminData);
-      // Don't throw — customer email already sent successfully
-    }
-
-    return new Response(JSON.stringify({ success: true, id: resendData.id }), {
+    return new Response(JSON.stringify({
+      success: true,
+      customerEmailSent: customerResult.ok,
+      adminEmailSent: adminResult.ok,
+    }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

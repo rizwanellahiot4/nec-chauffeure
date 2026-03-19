@@ -82,28 +82,6 @@ const AdminSettings = () => {
     toast.success('Brand settings saved');
   };
 
-  const handleSavePricing = async () => {
-    const { error } = await supabase.from('pricing_settings').update({
-      base_fare: pricing.baseFare,
-      price_per_km: pricing.pricePerKm,
-      hourly_rate: pricing.hourlyRate,
-      airport_surcharge: pricing.airportSurcharge,
-      child_seat_price: pricing.childSeatPrice,
-      distance_unit: pricing.distanceUnit ?? 'km',
-      hourly_distance_unit: pricing.distanceUnit === 'mi' ? 'mph' : 'kmh',
-      from_airport_surcharge: pricing.fromAirportSurcharge ?? 20,
-      to_airport_surcharge: pricing.toAirportSurcharge ?? 20,
-      private_tour_base_fare: pricing.privateTourBaseFare ?? 120,
-      hourly_chauffeur_base_fare: pricing.hourlyChauffeurBaseFare ?? 65,
-      rear_facing_seat_price: pricing.rearFacingSeatPrice ?? 15,
-      forward_facing_seat_price: pricing.forwardFacingSeatPrice ?? 12,
-      booster_seat_price: pricing.boosterSeatPrice ?? 10,
-    }).eq('id', '22222222-2222-2222-2222-222222222222');
-
-    if (error) return toast.error(error.message);
-    toast.success('Pricing settings saved');
-  };
-
   const handleSaveMap = async () => {
     const { error } = await supabase.from('map_settings').update({
       center_lat: mapSettings.centerLat,

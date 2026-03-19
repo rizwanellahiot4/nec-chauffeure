@@ -66,7 +66,7 @@ const AdminLogin = () => {
             <label className="text-sm font-medium mb-1.5 block">Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="N1auman2@@@8" className="pl-10 h-11" />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pl-10 h-11" />
             </div>
           </div>
 

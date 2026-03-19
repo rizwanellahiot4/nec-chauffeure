@@ -8,7 +8,6 @@ import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import { useCallback } from 'react';
 import NumberStepper from '@/components/ui/number-stepper';
 import { CHILD_SEAT_TYPES, SERVICE_TYPES } from '@/lib/booking-options';
-import { usePricingSettings } from '@/hooks/use-live-data';
 import type { ChildSeatType, ServiceType } from '@/types/booking';
 
 const BookingForm = () => {

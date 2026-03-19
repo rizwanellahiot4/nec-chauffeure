@@ -3,7 +3,7 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BrandSettings, PricingConfig, MapSettings } from '@/types/booking';
+import { BrandSettings, MapSettings } from '@/types/booking';
 import ColorPicker from '@/components/admin/ColorPicker';
 import { RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';

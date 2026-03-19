@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { formatChildSeatType, formatServiceType } from '@/lib/booking-options';
 import { toast } from 'sonner';
-import { usePricingSettings } from '@/hooks/use-live-data';
 
 const createBookingReference = () => `BK-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
 

@@ -8,9 +8,7 @@ import ColorPicker from '@/components/admin/ColorPicker';
 import { RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { useBrandSettings, useMapSettings, usePricingSettings } from '@/hooks/use-live-data';
-import { DISTANCE_UNITS } from '@/lib/booking-options';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useBrandSettings, useMapSettings } from '@/hooks/use-live-data';
 import { uploadAdminAsset } from '@/lib/admin-assets';
 
 const AdminSettings = () => {

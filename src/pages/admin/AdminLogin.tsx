@@ -58,7 +58,7 @@ const AdminLogin = () => {
             <label className="text-sm font-medium mb-1.5 block">Email</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="naumancheema643@gmail.com" className="pl-10 h-11" />
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@example.com" className="pl-10 h-11" />
             </div>
           </div>
 

@@ -181,7 +181,7 @@ Deno.serve(async (req) => {
 </body>
 </html>`;
 
-    // Send via Resend
+    // Send customer confirmation email
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -201,6 +201,97 @@ Deno.serve(async (req) => {
     if (!resendRes.ok) {
       console.error("Resend API error:", resendData);
       throw new Error(`Resend error [${resendRes.status}]: ${JSON.stringify(resendData)}`);
+    }
+
+    // Send admin notification email
+    const adminHtml = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f4f7;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+        <tr><td style="background:${brand.primaryColor};padding:24px 40px;text-align:center;">
+          ${logoHtml}
+          <h1 style="margin:0;color:#ffffff;font-size:20px;font-weight:700;">🔔 New Booking Received</h1>
+        </td></tr>
+
+        <tr><td style="background:${brand.accentColor};padding:12px 40px;text-align:center;">
+          <p style="margin:0;color:#ffffff;font-size:14px;font-weight:600;">${bookingReference} • $${Number(totalPrice).toFixed(2)}</p>
+        </td></tr>
+
+        <tr><td style="padding:28px 40px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+            <tr>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;width:140px;"><strong style="color:#888;font-size:12px;text-transform:uppercase;">Customer</strong></td>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;color:#333;font-size:14px;">${customerName} — <a href="mailto:${customerEmail}" style="color:${brand.accentColor};">${customerEmail}</a></td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;"><strong style="color:#888;font-size:12px;text-transform:uppercase;">Service</strong></td>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;color:#333;font-size:14px;">${serviceLabels[serviceType] ?? serviceType}${durationHours > 0 ? ` (${durationHours}h)` : ""}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;"><strong style="color:#888;font-size:12px;text-transform:uppercase;">Date & Time</strong></td>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;color:#333;font-size:14px;">${formattedDate} at ${formattedTime}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;"><strong style="color:#888;font-size:12px;text-transform:uppercase;">Pickup</strong></td>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;color:#333;font-size:14px;">${pickupAddress}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;"><strong style="color:#888;font-size:12px;text-transform:uppercase;">Drop-off</strong></td>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;color:#333;font-size:14px;">${dropoffAddress}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;"><strong style="color:#888;font-size:12px;text-transform:uppercase;">Vehicle</strong></td>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;color:#333;font-size:14px;">${vehicleName}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;"><strong style="color:#888;font-size:12px;text-transform:uppercase;">Passengers / Luggage</strong></td>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;color:#333;font-size:14px;">${passengers} pax / ${luggage} bags</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;"><strong style="color:#888;font-size:12px;text-transform:uppercase;">Distance</strong></td>
+              <td style="padding:8px 0;border-bottom:1px solid #eee;color:#333;font-size:14px;">${distanceKm?.toFixed(1) ?? "—"} km • ~${Math.round(durationMinutes ?? 0)} min</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;"><strong style="color:#888;font-size:12px;text-transform:uppercase;">Total</strong></td>
+              <td style="padding:8px 0;color:${brand.accentColor};font-size:18px;font-weight:700;">$${Number(totalPrice).toFixed(2)}</td>
+            </tr>
+          </table>
+        </td></tr>
+
+        <tr><td style="background:#f8f8fb;padding:20px 40px;text-align:center;border-top:1px solid #eee;">
+          <p style="margin:0;color:#aaa;font-size:11px;">This is an automated notification from ${brand.name}</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+    // Send to admin (brand email)
+    const adminRes = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: `${brand.name} <onboarding@resend.dev>`,
+        to: [brand.email],
+        subject: `🔔 New Booking ${bookingReference} — ${customerName} | $${Number(totalPrice).toFixed(2)}`,
+        html: adminHtml,
+      }),
+    });
+
+    const adminData = await adminRes.json();
+    if (!adminRes.ok) {
+      console.error("Admin email error:", adminData);
+      // Don't throw — customer email already sent successfully
     }
 
     return new Response(JSON.stringify({ success: true, id: resendData.id }), {

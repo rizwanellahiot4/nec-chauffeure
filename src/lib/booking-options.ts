@@ -1,4 +1,5 @@
 export const SERVICE_TYPES = [
+  { value: 'general', label: 'General Transfer' },
   { value: 'chauffeur-hourly', label: 'Chauffeur by the Hour' },
   { value: 'from-airport', label: 'From Airport' },
   { value: 'to-airport', label: 'To Airport' },

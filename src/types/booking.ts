@@ -13,6 +13,7 @@ export interface Vehicle {
 }
 
 export type ServiceType =
+  | 'general'
   | 'chauffeur-hourly'
   | 'from-airport'
   | 'to-airport'

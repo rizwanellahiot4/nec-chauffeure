@@ -6,6 +6,10 @@ export interface Vehicle {
   luggage: number;
   priceMultiplier: number;
   description: string;
+  pricePerMile: number;
+  minimumFare: number;
+  hourlyRate: number;
+  privateTourPrice: number;
 }
 
 export type ServiceType =

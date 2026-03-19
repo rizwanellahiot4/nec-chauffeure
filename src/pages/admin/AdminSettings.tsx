@@ -172,25 +172,6 @@ const AdminSettings = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="pricing">
-            <div className="bg-card rounded-xl border border-border shadow-luxury p-6 space-y-4">
-              <h3 className="font-display font-semibold">Pricing Configuration</h3>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div><label className="text-sm font-medium mb-1.5 block">Base Fare</label><Input type="number" value={pricing.baseFare} onChange={(e) => setPricing((p) => ({ ...p, baseFare: parseFloat(e.target.value) || 0 }))} /></div>
-                <div><label className="text-sm font-medium mb-1.5 block">Price per Distance</label><Input type="number" step="0.1" value={pricing.pricePerKm} onChange={(e) => setPricing((p) => ({ ...p, pricePerKm: parseFloat(e.target.value) || 0 }))} /></div>
-                <div><label className="text-sm font-medium mb-1.5 block">Hourly Rate</label><Input type="number" value={pricing.hourlyRate} onChange={(e) => setPricing((p) => ({ ...p, hourlyRate: parseFloat(e.target.value) || 0 }))} /></div>
-                <div><label className="text-sm font-medium mb-1.5 block">Distance Unit</label><Select value={pricing.distanceUnit ?? 'km'} onValueChange={(value) => setPricing((p) => ({ ...p, distanceUnit: value as 'km' | 'mi' }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{DISTANCE_UNITS.map((unit) => <SelectItem key={unit.value} value={unit.value}>{unit.label}</SelectItem>)}</SelectContent></Select></div>
-                <div><label className="text-sm font-medium mb-1.5 block">From Airport Surcharge</label><Input type="number" value={pricing.fromAirportSurcharge ?? 20} onChange={(e) => setPricing((p) => ({ ...p, fromAirportSurcharge: parseFloat(e.target.value) || 0 }))} /></div>
-                <div><label className="text-sm font-medium mb-1.5 block">To Airport Surcharge</label><Input type="number" value={pricing.toAirportSurcharge ?? 20} onChange={(e) => setPricing((p) => ({ ...p, toAirportSurcharge: parseFloat(e.target.value) || 0 }))} /></div>
-                <div><label className="text-sm font-medium mb-1.5 block">Private Tour Base Fare</label><Input type="number" value={pricing.privateTourBaseFare ?? 120} onChange={(e) => setPricing((p) => ({ ...p, privateTourBaseFare: parseFloat(e.target.value) || 0 }))} /></div>
-                <div><label className="text-sm font-medium mb-1.5 block">Chauffeur by the Hour Base Fare</label><Input type="number" value={pricing.hourlyChauffeurBaseFare ?? 65} onChange={(e) => setPricing((p) => ({ ...p, hourlyChauffeurBaseFare: parseFloat(e.target.value) || 0 }))} /></div>
-                <div><label className="text-sm font-medium mb-1.5 block">Rear Facing Seat</label><Input type="number" value={pricing.rearFacingSeatPrice ?? 15} onChange={(e) => setPricing((p) => ({ ...p, rearFacingSeatPrice: parseFloat(e.target.value) || 0 }))} /></div>
-                <div><label className="text-sm font-medium mb-1.5 block">Forward Facing Seat</label><Input type="number" value={pricing.forwardFacingSeatPrice ?? 12} onChange={(e) => setPricing((p) => ({ ...p, forwardFacingSeatPrice: parseFloat(e.target.value) || 0 }))} /></div>
-                <div><label className="text-sm font-medium mb-1.5 block">Booster Seat</label><Input type="number" value={pricing.boosterSeatPrice ?? 10} onChange={(e) => setPricing((p) => ({ ...p, boosterSeatPrice: parseFloat(e.target.value) || 0 }))} /></div>
-              </div>
-              <Button variant="gold" onClick={handleSavePricing}>Save Pricing</Button>
-            </div>
-          </TabsContent>
 
           <TabsContent value="map">
             <div className="bg-card rounded-xl border border-border shadow-luxury p-6 space-y-4">

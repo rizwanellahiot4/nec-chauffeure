@@ -181,27 +181,35 @@ Deno.serve(async (req) => {
 </body>
 </html>`;
 
+    // Helper to send email with graceful error handling (sandbox mode may reject recipients)
+    const sendEmail = async (to: string[], subject: string, html: string) => {
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: `${brand.name} <onboarding@resend.dev>`,
+          to,
+          subject,
+          html,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.warn(`Email to ${to.join(",")} failed (${res.status}):`, data?.message ?? data);
+        return { ok: false, data };
+      }
+      return { ok: true, data };
+    };
+
     // Send customer confirmation email
-    const resendRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: `${brand.name} <onboarding@resend.dev>`,
-        to: [customerEmail],
-        subject: `Booking Confirmed — ${bookingReference} | ${brand.name}`,
-        html: htmlBody,
-      }),
-    });
-
-    const resendData = await resendRes.json();
-
-    if (!resendRes.ok) {
-      console.error("Resend API error:", resendData);
-      throw new Error(`Resend error [${resendRes.status}]: ${JSON.stringify(resendData)}`);
-    }
+    const customerResult = await sendEmail(
+      [customerEmail],
+      `Booking Confirmed — ${bookingReference} | ${brand.name}`,
+      htmlBody,
+    );
 
     // Send admin notification email
     const adminHtml = `
@@ -274,27 +282,17 @@ Deno.serve(async (req) => {
 </html>`;
 
     // Send to admin (brand email)
-    const adminRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: `${brand.name} <onboarding@resend.dev>`,
-        to: [brand.email],
-        subject: `🔔 New Booking ${bookingReference} — ${customerName} | $${Number(totalPrice).toFixed(2)}`,
-        html: adminHtml,
-      }),
-    });
+    const adminResult = await sendEmail(
+      [brand.email],
+      `🔔 New Booking ${bookingReference} — ${customerName} | $${Number(totalPrice).toFixed(2)}`,
+      adminHtml,
+    );
 
-    const adminData = await adminRes.json();
-    if (!adminRes.ok) {
-      console.error("Admin email error:", adminData);
-      // Don't throw — customer email already sent successfully
-    }
-
-    return new Response(JSON.stringify({ success: true, id: resendData.id }), {
+    return new Response(JSON.stringify({
+      success: true,
+      customerEmailSent: customerResult.ok,
+      adminEmailSent: adminResult.ok,
+    }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

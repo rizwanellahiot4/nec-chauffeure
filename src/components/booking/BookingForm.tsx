@@ -21,7 +21,7 @@ const BookingForm = () => {
     setFormData((prev) => ({ ...prev, dropoffAddress: address, dropoffLat: lat, dropoffLng: lng }));
   }, [setFormData]);
 
-  const isHourlyService = formData.serviceType === 'chauffeur-hourly' || formData.serviceType === 'private-tour';
+  const isHourlyService = formData.serviceType === 'chauffeur-hourly';
   const canProceed = formData.pickupAddress && formData.dropoffAddress && formData.date && formData.time && routeInfo;
 
   return (

@@ -1,5 +1,5 @@
 import { useBooking } from '@/contexts/BookingContext';
-import { useVehicles, usePricingSettings } from '@/hooks/use-live-data';
+import { useVehicles } from '@/hooks/use-live-data';
 import { Button } from '@/components/ui/button';
 import { Users, Briefcase, ArrowLeft, Check } from 'lucide-react';
 import { motion } from 'framer-motion';

@@ -118,7 +118,6 @@ const AdminSettings = () => {
         <Tabs defaultValue="brand" className="space-y-6">
           <TabsList className="bg-secondary flex flex-wrap h-auto">
             <TabsTrigger value="brand">Branding</TabsTrigger>
-            <TabsTrigger value="pricing">Pricing</TabsTrigger>
             <TabsTrigger value="map">Map</TabsTrigger>
             <TabsTrigger value="payment">Payment</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>

@@ -17,6 +17,7 @@ const paymentStatusOptions: Booking['paymentStatus'][] = ['pending', 'paid', 're
 const AdminBookings = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('');
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [savingStatusId, setSavingStatusId] = useState<string | null>(null);
   const [savingPaymentId, setSavingPaymentId] = useState<string | null>(null);
@@ -30,9 +31,10 @@ const AdminBookings = () => {
         booking.id.toLowerCase().includes(q) ||
         booking.customer.email.toLowerCase().includes(q);
       const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesDate = !dateFilter || booking.formData.date === dateFilter;
+      return matchesSearch && matchesStatus && matchesDate;
     }),
-    [bookings, search, statusFilter],
+    [bookings, search, statusFilter, dateFilter],
   );
 
   const handleUpdateStatus = async (booking: Booking, nextStatus: Booking['status']) => {
@@ -73,6 +75,15 @@ const AdminBookings = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, email, or reference..." className="pl-10 bg-card" />
           </div>
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              type="date"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className="pl-10 w-full sm:w-44 bg-card"
+            />
+          </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-full sm:w-40 bg-card">
               <SelectValue placeholder="Status" />
@@ -85,6 +96,11 @@ const AdminBookings = () => {
               <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
+          {dateFilter && (
+            <Button variant="outline" size="sm" className="h-10" onClick={() => setDateFilter('')}>
+              Clear Date
+            </Button>
+          )}
         </div>
 
         {filtered.length === 0 && (

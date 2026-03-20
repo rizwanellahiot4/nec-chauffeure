@@ -330,8 +330,10 @@ export type Database = {
       }
       vehicles: {
         Row: {
+          booster_seat_price: number
           created_at: string
           description: string
+          forward_facing_seat_price: number
           hourly_rate: number
           id: string
           image: string
@@ -343,11 +345,14 @@ export type Database = {
           price_multiplier: number
           price_per_mile: number
           private_tour_price: number
+          rear_facing_seat_price: number
           updated_at: string
         }
         Insert: {
+          booster_seat_price?: number
           created_at?: string
           description?: string
+          forward_facing_seat_price?: number
           hourly_rate?: number
           id?: string
           image: string
@@ -359,11 +364,14 @@ export type Database = {
           price_multiplier?: number
           price_per_mile?: number
           private_tour_price?: number
+          rear_facing_seat_price?: number
           updated_at?: string
         }
         Update: {
+          booster_seat_price?: number
           created_at?: string
           description?: string
+          forward_facing_seat_price?: number
           hourly_rate?: number
           id?: string
           image?: string
@@ -375,6 +383,7 @@ export type Database = {
           price_multiplier?: number
           price_per_mile?: number
           private_tour_price?: number
+          rear_facing_seat_price?: number
           updated_at?: string
         }
         Relationships: []

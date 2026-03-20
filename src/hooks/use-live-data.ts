@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { defaultVehicles } from '@/data/vehicles';
@@ -152,6 +152,9 @@ export const mapBookingRowToBooking = (row: Record<string, any>): Booking => {
       minimumFare: 65,
       hourlyRate: 65,
       privateTourPrice: 120,
+      rearFacingSeatPrice: 15,
+      forwardFacingSeatPrice: 12,
+      boosterSeatPrice: 10,
     },
     route: {
       distance: Number(row.route_distance_km),
@@ -240,6 +243,9 @@ export const useVehicles = () => {
           minimumFare: Number((vehicle as any).minimum_fare ?? 65),
           hourlyRate: Number((vehicle as any).hourly_rate ?? 65),
           privateTourPrice: Number((vehicle as any).private_tour_price ?? 120),
+          rearFacingSeatPrice: Number((vehicle as any).rear_facing_seat_price ?? 15),
+          forwardFacingSeatPrice: Number((vehicle as any).forward_facing_seat_price ?? 12),
+          boosterSeatPrice: Number((vehicle as any).booster_seat_price ?? 10),
         }));
     },
   });
@@ -272,6 +278,9 @@ export const useAdminVehicles = () => {
         minimumFare: Number((vehicle as any).minimum_fare ?? 65),
         hourlyRate: Number((vehicle as any).hourly_rate ?? 65),
         privateTourPrice: Number((vehicle as any).private_tour_price ?? 120),
+        rearFacingSeatPrice: Number((vehicle as any).rear_facing_seat_price ?? 15),
+        forwardFacingSeatPrice: Number((vehicle as any).forward_facing_seat_price ?? 12),
+        boosterSeatPrice: Number((vehicle as any).booster_seat_price ?? 10),
       }));
     },
   });
@@ -297,4 +306,35 @@ export const useAdminBookings = () => {
 
   useEffect(() => subscribeToTable(['admin-bookings'], 'bookings', queryClient), [queryClient]);
   return query;
+};
+
+/** Returns a Set of booked "YYYY-MM-DD|HH:MM" keys for confirmed bookings */
+export const useBookedSlots = () => {
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ['booked-slots'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('pickup_at')
+        .eq('status', 'confirmed');
+
+      if (error) throw error;
+      return (data ?? []).map((row) => {
+        const dt = new Date(row.pickup_at);
+        const date = dt.toISOString().split('T')[0];
+        const hours = dt.getHours().toString().padStart(2, '0');
+        const minutes = dt.getMinutes().toString().padStart(2, '0');
+        return `${date}|${hours}:${minutes}`;
+      });
+    },
+    staleTime: 5_000,
+  });
+
+  useEffect(() => subscribeToTable(['booked-slots'], 'bookings', queryClient), [queryClient]);
+
+  const slotSet = useMemo(() => new Set(query.data ?? []), [query.data]);
+
+  return { ...query, slotSet };
 };

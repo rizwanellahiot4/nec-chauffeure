@@ -2,6 +2,7 @@ import sedanImg from '@/assets/vehicle-sedan.png';
 import suvImg from '@/assets/vehicle-suv.png';
 import vanImg from '@/assets/vehicle-van.png';
 import { Vehicle } from '@/types/booking';
+// NOTE: If you update Vehicle type, ensure defaultVehicles include new fields
 
 export const defaultVehicles: Vehicle[] = [
   {
@@ -16,6 +17,9 @@ export const defaultVehicles: Vehicle[] = [
     minimumFare: 65,
     hourlyRate: 65,
     privateTourPrice: 120,
+    rearFacingSeatPrice: 15,
+    forwardFacingSeatPrice: 12,
+    boosterSeatPrice: 10,
   },
   {
     id: '2',
@@ -29,6 +33,9 @@ export const defaultVehicles: Vehicle[] = [
     minimumFare: 85,
     hourlyRate: 85,
     privateTourPrice: 180,
+    rearFacingSeatPrice: 15,
+    forwardFacingSeatPrice: 12,
+    boosterSeatPrice: 10,
   },
   {
     id: '3',
@@ -42,5 +49,8 @@ export const defaultVehicles: Vehicle[] = [
     minimumFare: 95,
     hourlyRate: 95,
     privateTourPrice: 200,
+    rearFacingSeatPrice: 15,
+    forwardFacingSeatPrice: 12,
+    boosterSeatPrice: 10,
   },
 ];

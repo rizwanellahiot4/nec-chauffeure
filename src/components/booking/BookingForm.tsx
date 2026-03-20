@@ -4,14 +4,16 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Clock, ArrowRight } from 'lucide-react';
-import { useCallback } from 'react';
+import { Calendar, Clock, ArrowRight, AlertTriangle } from 'lucide-react';
+import { useCallback, useMemo } from 'react';
 import NumberStepper from '@/components/ui/number-stepper';
 import { CHILD_SEAT_TYPES, SERVICE_TYPES } from '@/lib/booking-options';
 import type { ChildSeatType, ServiceType } from '@/types/booking';
+import { useBookedSlots } from '@/hooks/use-live-data';
 
 const BookingForm = () => {
   const { formData, setFormData, setStep, routeInfo } = useBooking();
+  const { slotSet } = useBookedSlots();
 
   const handlePickup = useCallback((address: string, lat: number, lng: number) => {
     setFormData((prev) => ({ ...prev, pickupAddress: address, pickupLat: lat, pickupLng: lng }));
@@ -22,7 +24,13 @@ const BookingForm = () => {
   }, [setFormData]);
 
   const isHourlyService = formData.serviceType === 'chauffeur-hourly';
-  const canProceed = formData.pickupAddress && formData.dropoffAddress && formData.date && formData.time && routeInfo;
+
+  const isSlotTaken = useMemo(() => {
+    if (!formData.date || !formData.time) return false;
+    return slotSet.has(`${formData.date}|${formData.time}`);
+  }, [formData.date, formData.time, slotSet]);
+
+  const canProceed = formData.pickupAddress && formData.dropoffAddress && formData.date && formData.time && routeInfo && !isSlotTaken;
 
   return (
     <div className="space-y-5">
@@ -83,6 +91,13 @@ const BookingForm = () => {
           </div>
         </div>
       </div>
+
+      {isSlotTaken && (
+        <div className="flex items-center gap-2 bg-destructive/10 text-destructive rounded-lg p-3 text-sm">
+          <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+          <span>This date & time slot is already booked. Please choose a different time.</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <NumberStepper

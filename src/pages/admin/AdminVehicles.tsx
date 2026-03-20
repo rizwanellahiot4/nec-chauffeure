@@ -224,6 +224,7 @@ const AdminVehicles = () => {
                   <div>
                     <label className="text-sm font-medium mb-1.5 block">Private Tour Price ($)</label>
                     <Input type="number" step="1" value={form.privateTourPrice} onChange={(e) => setForm((f) => ({ ...f, privateTourPrice: parseFloat(e.target.value) || 0 }))} />
+                  </div>
                 </div>
               </div>
 

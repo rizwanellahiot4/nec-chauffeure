@@ -90,6 +90,9 @@ const AdminVehicles = () => {
       minimum_fare: form.minimumFare,
       hourly_rate: form.hourlyRate,
       private_tour_price: form.privateTourPrice,
+      rear_facing_seat_price: form.rearFacingSeatPrice,
+      forward_facing_seat_price: form.forwardFacingSeatPrice,
+      booster_seat_price: form.boosterSeatPrice,
     };
 
     const query = editVehicle

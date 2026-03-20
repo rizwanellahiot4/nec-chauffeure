@@ -13,6 +13,7 @@ import { useBookedSlots } from '@/hooks/use-live-data';
 
 const BookingForm = () => {
   const { formData, setFormData, setStep, routeInfo } = useBooking();
+  const { slotSet } = useBookedSlots();
 
   const handlePickup = useCallback((address: string, lat: number, lng: number) => {
     setFormData((prev) => ({ ...prev, pickupAddress: address, pickupLat: lat, pickupLng: lng }));
@@ -23,7 +24,13 @@ const BookingForm = () => {
   }, [setFormData]);
 
   const isHourlyService = formData.serviceType === 'chauffeur-hourly';
-  const canProceed = formData.pickupAddress && formData.dropoffAddress && formData.date && formData.time && routeInfo;
+
+  const isSlotTaken = useMemo(() => {
+    if (!formData.date || !formData.time) return false;
+    return slotSet.has(`${formData.date}|${formData.time}`);
+  }, [formData.date, formData.time, slotSet]);
+
+  const canProceed = formData.pickupAddress && formData.dropoffAddress && formData.date && formData.time && routeInfo && !isSlotTaken;
 
   return (
     <div className="space-y-5">

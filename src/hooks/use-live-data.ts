@@ -307,3 +307,34 @@ export const useAdminBookings = () => {
   useEffect(() => subscribeToTable(['admin-bookings'], 'bookings', queryClient), [queryClient]);
   return query;
 };
+
+/** Returns a Set of booked "YYYY-MM-DD|HH:MM" keys for confirmed bookings */
+export const useBookedSlots = () => {
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ['booked-slots'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('pickup_at')
+        .eq('status', 'confirmed');
+
+      if (error) throw error;
+      return (data ?? []).map((row) => {
+        const dt = new Date(row.pickup_at);
+        const date = dt.toISOString().split('T')[0];
+        const hours = dt.getHours().toString().padStart(2, '0');
+        const minutes = dt.getMinutes().toString().padStart(2, '0');
+        return `${date}|${hours}:${minutes}`;
+      });
+    },
+    staleTime: 5_000,
+  });
+
+  useEffect(() => subscribeToTable(['booked-slots'], 'bookings', queryClient), [queryClient]);
+
+  const slotSet = useMemo(() => new Set(query.data ?? []), [query.data]);
+
+  return { ...query, slotSet };
+};

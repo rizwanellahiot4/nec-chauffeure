@@ -152,6 +152,9 @@ export const mapBookingRowToBooking = (row: Record<string, any>): Booking => {
       minimumFare: 65,
       hourlyRate: 65,
       privateTourPrice: 120,
+      rearFacingSeatPrice: 15,
+      forwardFacingSeatPrice: 12,
+      boosterSeatPrice: 10,
     },
     route: {
       distance: Number(row.route_distance_km),

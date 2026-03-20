@@ -49,5 +49,8 @@ export const defaultVehicles: Vehicle[] = [
     minimumFare: 95,
     hourlyRate: 95,
     privateTourPrice: 200,
+    rearFacingSeatPrice: 15,
+    forwardFacingSeatPrice: 12,
+    boosterSeatPrice: 10,
   },
 ];

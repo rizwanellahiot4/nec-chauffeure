@@ -4,11 +4,12 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Clock, ArrowRight } from 'lucide-react';
-import { useCallback } from 'react';
+import { Calendar, Clock, ArrowRight, AlertTriangle } from 'lucide-react';
+import { useCallback, useMemo } from 'react';
 import NumberStepper from '@/components/ui/number-stepper';
 import { CHILD_SEAT_TYPES, SERVICE_TYPES } from '@/lib/booking-options';
 import type { ChildSeatType, ServiceType } from '@/types/booking';
+import { useBookedSlots } from '@/hooks/use-live-data';
 
 const BookingForm = () => {
   const { formData, setFormData, setStep, routeInfo } = useBooking();

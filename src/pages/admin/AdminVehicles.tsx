@@ -224,6 +224,23 @@ const AdminVehicles = () => {
                   <div>
                     <label className="text-sm font-medium mb-1.5 block">Private Tour Price ($)</label>
                     <Input type="number" step="1" value={form.privateTourPrice} onChange={(e) => setForm((f) => ({ ...f, privateTourPrice: parseFloat(e.target.value) || 0 }))} />
+                </div>
+              </div>
+
+              <div className="border-t border-border pt-4">
+                <h4 className="font-display font-semibold text-sm mb-3">Child Seat Pricing (Fixed per ride)</h4>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Rear-Facing ($)</label>
+                    <Input type="number" step="1" value={form.rearFacingSeatPrice} onChange={(e) => setForm((f) => ({ ...f, rearFacingSeatPrice: parseFloat(e.target.value) || 0 }))} />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Forward-Facing ($)</label>
+                    <Input type="number" step="1" value={form.forwardFacingSeatPrice} onChange={(e) => setForm((f) => ({ ...f, forwardFacingSeatPrice: parseFloat(e.target.value) || 0 }))} />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Booster ($)</label>
+                    <Input type="number" step="1" value={form.boosterSeatPrice} onChange={(e) => setForm((f) => ({ ...f, boosterSeatPrice: parseFloat(e.target.value) || 0 }))} />
                   </div>
                 </div>
               </div>

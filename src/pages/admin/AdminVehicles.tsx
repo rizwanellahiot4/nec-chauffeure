@@ -22,6 +22,9 @@ const emptyForm = {
   minimumFare: 65,
   hourlyRate: 65,
   privateTourPrice: 120,
+  rearFacingSeatPrice: 15,
+  forwardFacingSeatPrice: 12,
+  boosterSeatPrice: 10,
 };
 
 const AdminVehicles = () => {

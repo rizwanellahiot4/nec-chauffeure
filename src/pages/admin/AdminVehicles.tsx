@@ -56,6 +56,9 @@ const AdminVehicles = () => {
       minimumFare: v.minimumFare,
       hourlyRate: v.hourlyRate,
       privateTourPrice: v.privateTourPrice,
+      rearFacingSeatPrice: v.rearFacingSeatPrice,
+      forwardFacingSeatPrice: v.forwardFacingSeatPrice,
+      boosterSeatPrice: v.boosterSeatPrice,
     });
     setDialogOpen(true);
   };

@@ -10,6 +10,9 @@ export interface Vehicle {
   minimumFare: number;
   hourlyRate: number;
   privateTourPrice: number;
+  rearFacingSeatPrice: number;
+  forwardFacingSeatPrice: number;
+  boosterSeatPrice: number;
 }
 
 export type ServiceType =

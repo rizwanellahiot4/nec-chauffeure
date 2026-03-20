@@ -275,6 +275,9 @@ export const useAdminVehicles = () => {
         minimumFare: Number((vehicle as any).minimum_fare ?? 65),
         hourlyRate: Number((vehicle as any).hourly_rate ?? 65),
         privateTourPrice: Number((vehicle as any).private_tour_price ?? 120),
+        rearFacingSeatPrice: Number((vehicle as any).rear_facing_seat_price ?? 15),
+        forwardFacingSeatPrice: Number((vehicle as any).forward_facing_seat_price ?? 12),
+        boosterSeatPrice: Number((vehicle as any).booster_seat_price ?? 10),
       }));
     },
   });

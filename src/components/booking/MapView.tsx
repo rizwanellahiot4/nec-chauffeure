@@ -121,8 +121,9 @@ const MapView = () => {
         if (data.routes?.[0]) {
           const route = data.routes[0];
           const coords = route.geometry.coordinates.map((c: number[]) => [c[1], c[0]] as [number, number]);
+          // OSRM returns meters; convert to miles (1 mile = 1609.344 meters)
           setRouteInfo({
-            distance: route.distance / 1000,
+            distance: route.distance / 1609.344,
             duration: route.duration / 60,
             geometry: coords,
           });

@@ -97,15 +97,15 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         price = distanceMiles * vehicle.pricePerMile;
       }
 
-      // Child seat add-ons (from global pricing)
+      // Child seat add-ons (per-vehicle pricing)
       if (fd.childSeatType === 'rear-facing-seat') {
-        price += pricing.rearFacingSeatPrice ?? pricing.childSeatPrice;
+        price += vehicle.rearFacingSeatPrice ?? 15;
       }
       if (fd.childSeatType === 'forward-facing-seat') {
-        price += pricing.forwardFacingSeatPrice ?? pricing.childSeatPrice;
+        price += vehicle.forwardFacingSeatPrice ?? 12;
       }
       if (fd.childSeatType === 'booster-seat') {
-        price += pricing.boosterSeatPrice ?? pricing.childSeatPrice;
+        price += vehicle.boosterSeatPrice ?? 10;
       }
 
       return Math.round(price * 100) / 100;

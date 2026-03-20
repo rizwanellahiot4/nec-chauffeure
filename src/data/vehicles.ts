@@ -2,6 +2,7 @@ import sedanImg from '@/assets/vehicle-sedan.png';
 import suvImg from '@/assets/vehicle-suv.png';
 import vanImg from '@/assets/vehicle-van.png';
 import { Vehicle } from '@/types/booking';
+// NOTE: If you update Vehicle type, ensure defaultVehicles include new fields
 
 export const defaultVehicles: Vehicle[] = [
   {

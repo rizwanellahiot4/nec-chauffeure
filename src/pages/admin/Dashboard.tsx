@@ -12,6 +12,7 @@ import type { Booking } from '@/types/booking';
 const Dashboard = () => {
   const { data: bookings = [] } = useAdminBookings();
   const navigate = useNavigate();
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const stats = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];

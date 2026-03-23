@@ -230,6 +230,12 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      <BookingDetailModal
+        booking={selectedBooking}
+        open={Boolean(selectedBooking)}
+        onOpenChange={(open) => !open && setSelectedBooking(null)}
+      />
     </AdminLayout>
   );
 };

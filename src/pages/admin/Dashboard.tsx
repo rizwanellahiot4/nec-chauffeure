@@ -98,7 +98,7 @@ const Dashboard = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04 }}
-                  onClick={() => navigate('/admin/bookings')}
+                  onClick={() => setSelectedBooking(booking)}
                   className="bg-card rounded-xl border border-border p-5 shadow-luxury cursor-pointer hover:border-accent/50 hover:shadow-md transition-all"
                 >
                   {/* Header: customer + price */}

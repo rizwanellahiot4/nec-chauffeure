@@ -3,9 +3,11 @@ import { CalendarDays, DollarSign, Car, TrendingUp, Clock, MapPin, User, Phone, 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { motion } from 'framer-motion';
 import { useAdminBookings } from '@/hooks/use-live-data';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatServiceType } from '@/lib/booking-options';
+import BookingDetailModal from '@/components/admin/BookingDetailModal';
+import type { Booking } from '@/types/booking';
 
 const Dashboard = () => {
   const { data: bookings = [] } = useAdminBookings();

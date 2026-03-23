@@ -201,7 +201,7 @@ const Dashboard = () => {
                 {bookings.slice(0, 8).map((booking) => (
                   <tr
                     key={booking.dbId ?? booking.id}
-                    onClick={() => navigate('/admin/bookings')}
+                    onClick={() => setSelectedBooking(booking)}
                     className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors cursor-pointer"
                   >
                     <td className="p-3 font-mono text-xs">{booking.id}</td>

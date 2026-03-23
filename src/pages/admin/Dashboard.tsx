@@ -3,13 +3,16 @@ import { CalendarDays, DollarSign, Car, TrendingUp, Clock, MapPin, User, Phone, 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { motion } from 'framer-motion';
 import { useAdminBookings } from '@/hooks/use-live-data';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatServiceType } from '@/lib/booking-options';
+import BookingDetailModal from '@/components/admin/BookingDetailModal';
+import type { Booking } from '@/types/booking';
 
 const Dashboard = () => {
   const { data: bookings = [] } = useAdminBookings();
   const navigate = useNavigate();
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const stats = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -95,7 +98,7 @@ const Dashboard = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04 }}
-                  onClick={() => navigate('/admin/bookings')}
+                  onClick={() => setSelectedBooking(booking)}
                   className="bg-card rounded-xl border border-border p-5 shadow-luxury cursor-pointer hover:border-accent/50 hover:shadow-md transition-all"
                 >
                   {/* Header: customer + price */}
@@ -198,7 +201,7 @@ const Dashboard = () => {
                 {bookings.slice(0, 8).map((booking) => (
                   <tr
                     key={booking.dbId ?? booking.id}
-                    onClick={() => navigate('/admin/bookings')}
+                    onClick={() => setSelectedBooking(booking)}
                     className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors cursor-pointer"
                   >
                     <td className="p-3 font-mono text-xs">{booking.id}</td>
@@ -227,6 +230,12 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      <BookingDetailModal
+        booking={selectedBooking}
+        open={Boolean(selectedBooking)}
+        onOpenChange={(open) => !open && setSelectedBooking(null)}
+      />
     </AdminLayout>
   );
 };

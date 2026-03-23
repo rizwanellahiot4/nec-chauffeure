@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Search, Calendar, Eye, MapPin, User, CreditCard, DollarSign, Car } from 'lucide-react';
+import BookingDetailModal from '@/components/admin/BookingDetailModal';
 import type { Booking } from '@/types/booking';
 import { useAdminBookings } from '@/hooks/use-live-data';
 import { formatServiceType } from '@/lib/booking-options';
@@ -216,46 +216,11 @@ const AdminBookings = () => {
         </div>
       </div>
 
-      <Dialog open={Boolean(selectedBooking)} onOpenChange={(open) => !open && setSelectedBooking(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-display">Booking Details</DialogTitle>
-          </DialogHeader>
-          {selectedBooking ? (
-            <div className="space-y-4 text-sm">
-              <div className="bg-secondary rounded-lg p-3">
-                <p className="text-xs text-muted-foreground">Reference</p>
-                <p className="font-mono">{selectedBooking.id}</p>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div><p className="text-xs text-muted-foreground">Customer</p><p className="font-medium">{selectedBooking.customer.fullName}</p></div>
-                <div><p className="text-xs text-muted-foreground">Email</p><p>{selectedBooking.customer.email}</p></div>
-                <div><p className="text-xs text-muted-foreground">Phone</p><p>{selectedBooking.customer.phone}</p></div>
-                <div><p className="text-xs text-muted-foreground">Vehicle</p><p>{selectedBooking.vehicle.name}</p></div>
-                <div><p className="text-xs text-muted-foreground">Booking Status</p><p>{selectedBooking.status}</p></div>
-                <div><p className="text-xs text-muted-foreground">Payment Status</p><p>{selectedBooking.paymentStatus}</p></div>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Pickup Address</p>
-                <p>{selectedBooking.formData.pickupAddress}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Dropoff Address</p>
-                <p>{selectedBooking.formData.dropoffAddress}</p>
-              </div>
-              <div className="grid sm:grid-cols-3 gap-3">
-                <div><p className="text-xs text-muted-foreground">Date</p><p>{selectedBooking.formData.date}</p></div>
-                <div><p className="text-xs text-muted-foreground">Time</p><p>{selectedBooking.formData.time}</p></div>
-                <div><p className="text-xs text-muted-foreground">Total</p><p className="font-medium">${selectedBooking.totalPrice.toFixed(2)}</p></div>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Service & Notes</p><p>{formatServiceType(selectedBooking.formData.serviceType)}</p>
-                {selectedBooking.formData.notes ? <p className="text-muted-foreground mt-1">{selectedBooking.formData.notes}</p> : null}
-              </div>
-            </div>
-          ) : null}
-        </DialogContent>
-      </Dialog>
+      <BookingDetailModal
+        booking={selectedBooking}
+        open={Boolean(selectedBooking)}
+        onOpenChange={(open) => !open && setSelectedBooking(null)}
+      />
     </AdminLayout>
   );
 };
